@@ -255,24 +255,60 @@ void createFractal(int depth, int startX, int endX,
   int midX = (startX + endX) / 2;
   int midZ = (startZ + endZ) / 2;
   
-  fractal.points[midX][startZ].y = average({ fractal.points[startX][startZ].y,
-                                             fractal.points[endX][startZ].y }) +
-                                   randomNumber(-yRange, yRange);
-  fractal.points[midX][endZ].y = average({ fractal.points[startX][endZ].y,
-                                           fractal.points[endX][endZ].y }) +
-                                 randomNumber(-yRange, yRange);
-  fractal.points[startX][midZ].y = average({ fractal.points[startX][startZ].y,
-                                             fractal.points[startX][endZ].y }) +
-                                   randomNumber(-yRange, yRange);
-  fractal.points[endX][midZ].y = average({ fractal.points[endX][startZ].y,
-                                           fractal.points[endX][endZ].y }) +
+  fractal.points[midX][midZ].y = average({fractal.points[midX][startZ].y,
+                                          fractal.points[midX][endZ].y,
+                                          fractal.points[startX][midZ].y,
+                                          fractal.points[endX][midZ].y}) +
                                  randomNumber(-yRange, yRange);
 
-  fractal.points[midX][midZ].y = average({ fractal.points[midX][startZ].y,
-                                            fractal.points[midX][endZ].y,
-                                            fractal.points[startX][midZ].y,
-                                            fractal.points[endX][midZ].y }) +
-                                 randomNumber(-yRange, yRange);
+  if (startZ == 0) {
+    fractal.points[midX][startZ].y = average({fractal.points[startX][startZ].y,
+                                              fractal.points[endX][startZ].y,
+                                              fractal.points[midX][midZ].y}) +
+                                     randomNumber(-yRange, yRange);
+  } else {
+    fractal.points[midX][startZ].y = average({fractal.points[startX][startZ].y,
+                                              fractal.points[endX][startZ].y,
+                                              fractal.points[midX][midZ].y,
+                                              fractal.points[midX][startZ - midZ].y}) +
+                                     randomNumber(-yRange, yRange);
+  }
+  if (endZ == 0) {
+    fractal.points[midX][endZ].y = average({fractal.points[startX][endZ].y,
+                                            fractal.points[endX][endZ].y,
+                                            fractal.points[midX][midZ].y}) +
+                                   randomNumber(-yRange, yRange);
+  } else {
+    fractal.points[midX][startZ].y = average({fractal.points[startX][startZ].y,
+                                             fractal.points[endX][startZ].y,
+                                             fractal.points[midX][midZ].y,
+                                             fractal.points[midX][endZ + midZ].y}) +
+                                             randomNumber(-yRange, yRange);
+  }
+  if (startX == 0) {
+    fractal.points[startX][midZ].y = average({fractal.points[startX][startZ].y,
+                                              fractal.points[startX][endZ].y,
+                                              fractal.points[midX][midZ].y}) +
+                                     randomNumber(-yRange, yRange);
+  } else {
+    fractal.points[midX][startZ].y = average({fractal.points[startX][startZ].y,
+                                              fractal.points[startX][endZ].y,
+                                              fractal.points[midX][midZ].y,
+                                              fractal.points[startX - midX][midZ].y}) +
+                                     randomNumber(-yRange, yRange);
+  }
+  if (endX == 0) {
+    fractal.points[endX][midZ].y = average({fractal.points[endX][startZ].y,
+                                            fractal.points[endX][endZ].y,
+                                            fractal.points[midX][midZ].y}) +
+                                   randomNumber(-yRange, yRange);
+  } else {
+    fractal.points[midX][startZ].y = average({fractal.points[endX][startZ].y,
+                                              fractal.points[endX][endZ].y,
+                                              fractal.points[midX][midZ].y,
+                                              fractal.points[endX + midX][midZ].y}) +
+                                     randomNumber(-yRange, yRange);
+  }
   
   yRange *= fractal.deviance;
 
