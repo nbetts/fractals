@@ -56,10 +56,9 @@ void keyboard(unsigned char key, int x, int y);
 void updateFractal(float yRange, float dFactor);
 void updateYRange(float range);
 void updateDeviance(float dFactor);
-float average(initializer_list<float> values);
 void initFractal(int treeDepth, float yRange, float deviance);
-void createFractal(int depth, int startX, int endX,
-                   int startZ, int endZ, float yRange);
+void createFractal(int size, float yRange);
+float average(initializer_list<float> values);
 void display();
 void reshape();
 void getScreenDimensions();
@@ -166,8 +165,9 @@ void updateFractal(float yRange, float deviance)
 {
   updateYRange(yRange);
   updateDeviance(deviance);
-  createFractal(fractal.depth, 0, fractal.size - 1,
-                0, fractal.size - 1, fractal.yRange);
+  // createFractal(fractal.depth, 0, fractal.size - 1,
+  //               0, fractal.size - 1, fractal.yRange);
+  createFractal(fractal.size, fractal.yRange);
 }
 
 /**
@@ -222,6 +222,34 @@ void initFractal(int treeDepth, float yRange, float deviance)
   fractal.deviance = deviance;
 }
 
+/**
+ * Create the fractal by using the midpoint displacement algorithm in 3D.
+ */
+void createFractal(int size, float yRange)
+{
+  int halfSize = size / 2;
+
+  if (size == fractal.size) {
+    fractal.points[0][0].y = randomNumber(-yRange, yRange);
+    fractal.points[0][size - 1].y = randomNumber(-yRange, yRange);
+    fractal.points[size - 1][0].y = randomNumber(-yRange, yRange);
+    fractal.points[size - 1][size - 1].y = randomNumber(-yRange, yRange);
+
+    yRange *= fractal.deviance;
+  } else if (size <= 0) {
+    return;
+  }
+
+  printf("size=%d\n", size);
+
+  int i, j, counter = 1;
+  for (i = halfSize; i > 0; i /= 2) {
+    for (j = 0; j < pow(counter, 2); j *= 2) {
+      fractal.points[i][i].y = randomNumber(-yRange, yRange);
+    }
+  }
+}
+
 float average(initializer_list<float> values)
 {
   float sum = 0;
@@ -233,82 +261,6 @@ float average(initializer_list<float> values)
   }
 
   return sum / (float)count;
-}
-
-/**
- * Recursively update the points in the fractal using the midpoint displacement
- * algorithm.
- */
-void createFractal(int depth, int startX, int endX,
-                   int startZ, int endZ, float yRange)
-{
-  if (depth == fractal.depth) {
-    fractal.points[startX][startZ].y = randomNumber(-yRange, yRange);
-    fractal.points[startX][endZ].y = randomNumber(-yRange, yRange);
-    fractal.points[endX][startZ].y = randomNumber(-yRange, yRange);
-    fractal.points[endX][endZ].y = randomNumber(-yRange, yRange);
-
-    yRange *= fractal.deviance;
-  } else if (depth <= 0) {
-    return;
-  }
-
-
-  int midX = (startX + endX) / 2;
-  int midZ = (startZ + endZ) / 2;
-  printf("size=%d, depth=%d, startX=%d, midX=%d, endX=%d, startZ=%d, midZ=%d, endZ=%d\n\n", fractal.size - 1, depth, startX, midX, endX, startZ, midZ, endZ);
-  float a = fractal.points[startX][startZ].y;
-  float b = fractal.points[startX][endZ].y;
-  float c = fractal.points[endX][startZ].y;
-  float d = fractal.points[endX][endZ].y;
-  float e = average({a, b, c, d}) + randomNumber(-yRange, yRange);
-  float f, g, h, i;
-
-  if (startZ == 0) {
-    f = average({a, c, e}) + randomNumber(-yRange, yRange);
-  } else {
-    int diff = (startZ * 2) - midZ;
-    f = average({a, c, e, fractal.points[midX][diff].y}) +
-        randomNumber(-yRange, yRange);
-  }
-  if (startX == 0) {
-    g = average({a, b, e}) + randomNumber(-yRange, yRange);
-  } else {
-    int diff = (startX * 2) - midX;
-    g = average({a, b, e, fractal.points[diff][midZ].y}) +
-        randomNumber(-yRange, yRange);
-  }
-  if (endZ == fractal.size - 1) {
-    h = average({b, d, e}) + randomNumber(-yRange, yRange);
-  } else {
-    int diff = (endZ * 2) - midZ;
-    h = average({b, d, e, fractal.points[midX][diff].y}) +
-        randomNumber(-yRange, yRange);
-  }
-  if (endX == fractal.size - 1) {
-    i = average({c, d, e}) + randomNumber(-yRange, yRange);
-  } else {
-    int diff = (endX * 2) - midX;
-    i = average({c, d, e, fractal.points[diff][midZ].y}) +
-        randomNumber(-yRange, yRange);
-  }
-
-  fractal.points[midX][midZ].y = e;
-  fractal.points[midX][startZ].y = f;
-  fractal.points[startX][midZ].y = g;
-  fractal.points[midX][endZ].y = h;
-  fractal.points[endX][midZ].y = i;
-
-  yRange *= fractal.deviance;
-
-  createFractal(depth - 1, startX, midX,
-                startZ, midZ, yRange);
-  createFractal(depth - 1, startX, midX,
-                midZ, endZ, yRange);
-  createFractal(depth - 1, midX, endX,
-                startZ, midZ, yRange);
-  createFractal(depth - 1, midX, endX,
-                midZ, endZ, yRange);
 }
 
 /**
