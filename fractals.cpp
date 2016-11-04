@@ -1,71 +1,32 @@
-// libraries
-#ifdef __APPLE__
-  #include <GLUT/glut.h>
-#else
-  #include <GL/glut.h>
-#endif
-#include <math.h>
-#include <float.h>
-#include <sstream>
-#include <X11/Xlib.h>
-#include <string>
-using namespace std;
+/**
+ * [program description here]
+ */
 
-typedef struct {
-  float x;
-  float y;
-  float z;
-} Point;
+#include "fractals.h"
 
-typedef struct {
-  Point** points;
-  int size;
-  int pointCount;
-  int depth;
-  float yRange;
-  float deviance;
-} Fractal;
-
-// Screen dimensions
+// Screen info
 int screenWidth;
 int screenHeight;
 int windowWidth;
 int windowHeight;
 
-// Text
+// Text info
 stringstream stringStream;
 
 // Fractal info
+const int defaultDepth = 6;
+const float defaultYRange = 0.2;
+const float defaultDeviance = 0.5;
+const float yRangeIncrement = 0.1;
+const float dFactorIncrement = 0.05;
+float sumYValues;
 Fractal fractal;
-int defaultTreeDepth = 3;
-float defaultYRange = 0.4;
-float defaultDeviance = 0.5;
-int currentFractalCount;
-int currentTreeDepth;
-float currentYRange;
-float currentDeviance;
-float yRangeIncrement = 0.1;
-float dFactorIncrement = 0.05;
 
-
-// functions
-double randomNumber(double min, double max);
-void drawText(int lineNo, string text, float textOffset, float value, float valueOffset);
-void drawHelpInfo();
-void keyboard(unsigned char key, int x, int y);
-void updateFractal(float yRange, float dFactor);
-void updateYRange(float range);
-void updateDeviance(float dFactor);
-void initFractal(int treeDepth, float yRange, float deviance);
-void createFractal(int size, float yRange);
-float average(initializer_list<float> values);
-void display();
-void reshape();
-void getScreenDimensions();
-void initGraphics(int argc, char* argv[]);
-int main(int argc, char* argv[]);
-
-
+// Camera info
+const float defaultRadius = 5;
+const float defaultLatitude = 30;
+const float defaultLongitude = -30;
+Camera camera;
 
 /**
  * Return a random real number in the given range.
@@ -73,6 +34,32 @@ int main(int argc, char* argv[]);
 double randomNumber(double min, double max)
 {
   return min + rand() / (RAND_MAX / (max - min) + 1.0);
+}
+
+float average(initializer_list<float> values)
+{
+  float sum = 0;
+  int count = 0;
+
+  for(auto value : values) {
+    sum += value;
+    count++;
+  }
+
+  return sum / (float)count;
+}
+
+float getY(int x, int z)
+{
+  int pos = (x & (fractal.size - 1)) + (z & (fractal.size - 1)) * fractal.size;
+  return fractal.yValues[pos];
+}
+
+void setY(int x, int z, float value)
+{
+  int pos = (x & (fractal.size - 1)) + (z & (fractal.size - 1)) * fractal.size;
+  fractal.yValues[pos] = value;
+  sumYValues += value;
 }
 
 /**
@@ -104,7 +91,71 @@ void drawText(int lineNo, string text, float textOffset, float value, float valu
 void drawHelpInfo()
 {
   glColor3f(0.5, 0.5, 0.5);
-  drawText(0, "Keyboard: S/W = -/+ Y range, A/D = -/+ deviance, Q/E = -/+ tree depth, R = reset values     Tree depth = ", windowHeight - 10, currentTreeDepth, 850);
+  drawText(0, "Keyboard: S/W = -/+ Y range, A/D = -/+ deviance, Q/E = -/+ tree depth, R = reset values     Tree depth = ", windowHeight - 10, fractal.depth, 850);
+}
+
+/**
+ * Initialise the fractal with the given properties.
+ */
+void initFractal(int depth, float yRange, float deviance)
+{
+  fractal.depth = depth;
+  fractal.size = pow(2, depth);
+  fractal.pointCount = pow(fractal.size, 2);
+  fractal.yRange = yRange;
+  fractal.deviance = deviance;
+  fractal.yValues = new float[fractal.pointCount];
+}
+
+/**
+ * Recursively update the points in the fractal using the midpoint displacement
+ * algorithm.
+ */
+void createFractal()
+{
+  sumYValues = 0;
+  int fractalSize = fractal.size;
+  float yRange = fractal.yRange;
+
+  while (fractalSize > 1) {
+    int halfStep = fractalSize / 2;
+
+    for (int y = halfStep; y < fractal.size + halfStep; y += fractalSize) {
+      for (int x = halfStep; x < fractal.size + halfStep; x += fractalSize) {
+        int hs = fractalSize / 2;
+        float a = getY(x - hs, y - hs);
+        float b = getY(x + hs, y - hs);
+        float c = getY(x - hs, y + hs);
+        float d = getY(x + hs, y + hs);
+        setY(x, y, average({a, b, c, d}) + randomNumber(-yRange, yRange));
+      }
+    }
+
+    for (int y = 0; y < fractal.size; y += fractalSize) {
+      for (int x = 0; x < fractal.size; x += fractalSize) {
+        int hs = fractalSize / 2;
+        float newX = x + halfStep;
+        float a = getY(newX - hs, y);
+        float b = getY(newX + hs, y);
+        float c = getY(newX, y - hs);
+        float d = getY(newX, y + hs);
+        setY(newX, y, average({a, b, c, d}) + randomNumber(-yRange, yRange));
+   
+        float newY = y + halfStep;
+        a = getY(x - hs, newY);
+        b = getY(x + hs, newY);
+        c = getY(x, newY - hs);
+        d = getY(x, newY + hs);
+        setY(x, newY, average({a, b, c, d}) + randomNumber(-yRange, yRange));
+      }
+  }
+
+    fractalSize /= 2;
+    yRange *= fractal.deviance;
+  }
+
+  // reset the camera's focal point.
+  camera.focus.y = 0;
 }
 
 /**
@@ -119,148 +170,99 @@ void keyboard(unsigned char key, int x, int y)
     case ' ': // Spacebar; hold down for cool visual effects
       break;
     case 's':
-      if (currentYRange - yRangeIncrement >= 0) {
-        currentYRange -= yRangeIncrement;
+      if (fractal.yRange - yRangeIncrement >= 0) {
+        fractal.yRange -= yRangeIncrement;
       }
       break;
     case 'w':
-      currentYRange += yRangeIncrement;
+      fractal.yRange += yRangeIncrement;
       break;
     case 'a':
-      if (currentDeviance - dFactorIncrement >= 0) {
-        currentDeviance -= dFactorIncrement;
+      if (fractal.deviance - dFactorIncrement >= 0) {
+        fractal.deviance -= dFactorIncrement;
       }
       break;
     case 'd':
-      currentDeviance += dFactorIncrement;
+      fractal.deviance += dFactorIncrement;
       break;
     case 'q':
-      if (currentTreeDepth - 1 >= 0) {
-        currentTreeDepth--;
-        initFractal(currentTreeDepth, currentYRange, currentDeviance);
+      if (fractal.depth - 1 > 0) {
+        fractal.depth--;
+        initFractal(fractal.depth, fractal.yRange, fractal.deviance);
       }
       break;
     case 'e':
-      currentTreeDepth++;
-      initFractal(currentTreeDepth, currentYRange, currentDeviance);
+      fractal.depth++;
+      initFractal(fractal.depth, fractal.yRange, fractal.deviance);
       break;
     case 'r':
-      currentTreeDepth = defaultTreeDepth;
-      currentYRange = defaultYRange;
-      currentDeviance = defaultDeviance;
-      initFractal(defaultTreeDepth, defaultYRange, defaultDeviance);
+      initFractal(defaultDepth, defaultYRange, defaultDeviance);
       break;
+    case '-':
+      camera.focus.y += 0.01;
+      glutPostRedisplay();
+      return;
+    case '=':
+      camera.focus.y -= 0.01;
+      glutPostRedisplay();
+      return;
     default:
       return;
   }
 
-  updateFractal(currentYRange, currentDeviance);
+  createFractal();
   glutPostRedisplay();
 }
 
 /**
- * Update the fractal Y-range, deviance and point location.
+ * Capture mouse input.
  */
-void updateFractal(float yRange, float deviance)
+void mouse(int button, int state, int x, int y)
 {
-  updateYRange(yRange);
-  updateDeviance(deviance);
-  // createFractal(fractal.depth, 0, fractal.size - 1,
-  //               0, fractal.size - 1, fractal.yRange);
-  createFractal(fractal.size, fractal.yRange);
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+    camera.lastMouseX = x;
+    camera.lastMouseY = y;
+    camera.enableMouseMotion = true;
+  } else {
+    camera.enableMouseMotion = false;
+  }
 }
 
 /**
- * Update the Y-range of the fractal using the following function:
- * yR = (n + 1) * baseRange
+ * Capture the motion of the mouse.
  */
-void updateYRange(float baseRange)
+void mouseMotion(int x, int y)
 {
-  currentYRange = baseRange;
-  fractal.yRange = baseRange;
-}
+  if (camera.enableMouseMotion) {
+    camera.latitude += x - camera.lastMouseX;
+    camera.lastMouseX = x;
+    camera.longitude -= y - camera.lastMouseY;
+    camera.lastMouseY = y;
 
-/**
- * Update the deviances of the fractal using the following function:
- * d = (n * 0.05) + baseDeviance
- */
-void updateDeviance(float baseDeviance)
-{
-  currentDeviance = baseDeviance;
-  fractal.deviance = baseDeviance;
-}
-
-/**
- * Initialise the fractal with the given properties.
- */
-void initFractal(int treeDepth, float yRange, float deviance)
-{
-  currentTreeDepth = treeDepth;
-  currentYRange = yRange;
-  currentDeviance = deviance;
-  int pointCount2d = pow(2, treeDepth) + 1;
-  int pointCount3d = pow(pointCount2d, 2);
-
-  Point** points = new Point*[pointCount2d];
-  float segmentLength = 1.0 / (float)pointCount2d;
-  int i, j;
-  for (i = 0; i < pointCount2d; i++) {
-    points[i] = new Point[pointCount2d];
-
-    for (j = 0; j < pointCount2d; j++) {
-      points[i][j].x = i * segmentLength;
-      points[i][j].y = 0;
-      points[i][j].z = j * segmentLength;
+    // prevent the longitude from rotating the model upside-down.
+    if (camera.longitude >= 90) {
+      camera.longitude = 89;
+    } else if (camera.longitude <= -90) {
+      camera.longitude = -89;
     }
+
+    glutPostRedisplay();
   }
-  
-  fractal.size = pointCount2d;
-  fractal.points = points;
-  fractal.pointCount = pointCount3d;
-  fractal.depth = treeDepth;
-  fractal.yRange = yRange;
-  fractal.deviance = deviance;
 }
 
 /**
- * Create the fractal by using the midpoint displacement algorithm in 3D.
+ * Update various properties of the camera and the project matrix.
  */
-void createFractal(int size, float yRange)
+void updateCamera()
 {
-  int halfSize = size / 2;
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(10, (GLfloat)screenWidth / (GLfloat)screenHeight, 0.1, 20.0);
 
-  if (size == fractal.size) {
-    fractal.points[0][0].y = randomNumber(-yRange, yRange);
-    fractal.points[0][size - 1].y = randomNumber(-yRange, yRange);
-    fractal.points[size - 1][0].y = randomNumber(-yRange, yRange);
-    fractal.points[size - 1][size - 1].y = randomNumber(-yRange, yRange);
-
-    yRange *= fractal.deviance;
-  } else if (size <= 0) {
-    return;
-  }
-
-  printf("size=%d\n", size);
-
-  int i, j, counter = 1;
-  for (i = halfSize; i > 0; i /= 2) {
-    for (j = 0; j < pow(counter, 2); j *= 2) {
-      fractal.points[i][i].y = randomNumber(-yRange, yRange);
-    }
-  }
-}
-
-float average(initializer_list<float> values)
-{
-  float sum = 0;
-  int count = 0;
-
-  for(auto value : values) {
-    sum += value;
-    count++;
-  }
-
-  return sum / (float)count;
+  int focusY = camera.focus.y + (sumYValues / fractal.pointCount);
+  gluLookAt(camera.radius, 0, 0,
+            camera.focus.x, focusY, camera.focus.z,
+            0, 1, 0);
 }
 
 /**
@@ -268,50 +270,56 @@ float average(initializer_list<float> values)
  */
 void display()
 {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT);
 
   // position and orient the camera
+  updateCamera();
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(10, (GLfloat)screenWidth / (GLfloat)screenHeight,
-                 0.1, 20.0);
-  glMatrixMode(GL_MODELVIEW);
-  gluLookAt(7, 2.5, 5,
-            0, 0, 0,
-            0, 1, 0);
+  glRotatef(camera.longitude, 0, 0, 1);
+  glRotatef(camera.latitude, 0, 1, 0);
+  glTranslatef(-0.5, 0, -0.5);
 
   // draw the fractal
-  float yDifference = fractal.yRange * 2;
   int i, j;
+  float yDifference = fractal.yRange * 2;
+
   for (i = 0; i < fractal.size - 1; i++) {
     glBegin(GL_LINE_STRIP);
     for (j = 0; j < fractal.size; j++) {
-      glColor3f(0, 1, (fractal.points[i][j].y / yDifference) + 0.5);
-      glVertex3f(fractal.points[i][j].x,
-                 fractal.points[i][j].y,
-                 fractal.points[i][j].z);
+      float x = (float)i / fractal.size;
+      float y = getY(i, j);
+      float z = (float)j / fractal.size;
 
-      glColor3f(0, 1, (fractal.points[i + 1][j].y / yDifference) + 0.5);
-      glVertex3f(fractal.points[i + 1][j].x,
-                 fractal.points[i + 1][j].y,
-                 fractal.points[i + 1][j].z);
+      glColor3f(0, 1, (y / yDifference) + 0.5);
+      glVertex3f(x, y, z);
+
+      x = (float)(i + 1) / fractal.size;
+      y = getY(i + 1, j);
+
+      glColor3f(0, 1, (y / yDifference) + 0.5);
+      glVertex3f(x, y, z);
     }
     glEnd();
   }
+
   for (i = 0; i < fractal.size; i++) {
     glBegin(GL_LINES);
     for (j = 0; j < fractal.size - 1; j++) {
-      glColor3f(0, 1, (fractal.points[i][j].y / yDifference) + 0.5);
-      glVertex3f(fractal.points[i][j].x,
-                 fractal.points[i][j].y,
-                 fractal.points[i][j].z);
+      float x = (float)i / fractal.size;
+      float y = getY(i, j);
+      float z = (float)j / fractal.size;
 
-      glColor3f(0, 1, (fractal.points[i][j + 1].y / yDifference) + 0.5);
-      glVertex3f(fractal.points[i][j + 1].x,
-                 fractal.points[i][j + 1].y,
-                 fractal.points[i][j + 1].z);
+      glColor3f(0, 1, (y / yDifference) + 0.5);
+      glVertex3f(x, y, z);
+
+      y = getY(i, j + 1);
+      z = (float)(j + 1) / fractal.size;
+
+      glColor3f(0, 1, (y / yDifference) + 0.5);
+      glVertex3f(x, y, z);
     }
     glEnd();
   }
@@ -381,17 +389,39 @@ void initGraphics(int argc, char* argv[])
   glutCreateWindow("Midpoint Displacement Algorithm Demo in 3D");
 
   // Set blending.
+  // glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_LINE_SMOOTH);
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
   // Set various interface functions.
-  glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
+  glutMouseFunc(mouse);
+  glutMotionFunc(mouseMotion);
+  glutDisplayFunc(display);
   glutReshapeFunc(reshape);
 
-  gluPerspective(80, (GLfloat)screenWidth / (GLfloat)screenHeight, 10.0, 5000.0);
+  initCamera();
+  initFractal(defaultDepth, defaultYRange, defaultDeviance);
+  createFractal();
+}
+
+/**
+ * Initialise the camera with default values.
+ */
+void initCamera()
+{
+  Point position = {0, 0, 0};
+  Point focusPoint = {0, 0, 0};
+  camera.position = position;
+  camera.focus = focusPoint;
+  camera.radius = defaultRadius;
+  camera.latitude = defaultLatitude;
+  camera.longitude = defaultLongitude;
+  camera.lastMouseX = 0;
+  camera.lastMouseY = 0;
+  camera.enableMouseMotion = false;
 }
 
 /**
@@ -401,9 +431,6 @@ int main(int argc, char* argv[])
 {
   srand(time(NULL));
   initGraphics(argc, argv);
-
-  initFractal(defaultTreeDepth, defaultYRange, defaultDeviance);
-  updateFractal(currentYRange, currentDeviance);
   glutMainLoop();
 
   return 0;
