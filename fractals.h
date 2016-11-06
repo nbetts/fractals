@@ -33,6 +33,7 @@ typedef struct {
 typedef struct {
   Point position;
   Point focus;
+  float fov;
   float radius;
   float latitude;
   float longitude;

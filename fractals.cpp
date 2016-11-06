@@ -26,6 +26,7 @@ Fractal fractal;
 const float defaultRadius = 5;
 const float defaultLatitude = 30;
 const float defaultLongitude = -30;
+float fovIncrement = 1;
 Camera camera;
 
 /**
@@ -199,11 +200,15 @@ void keyboard(unsigned char key, int x, int y)
       initFractal(defaultDepth, defaultYRange, defaultDeviance);
       break;
     case '-':
-      camera.focus.y += 0.01;
+      // camera.focus.y += 0.01;
+      camera.fov += fovIncrement;
+      fovIncrement += 0.05;
       glutPostRedisplay();
       return;
     case '=':
-      camera.focus.y -= 0.01;
+      // camera.focus.y -= 0.01;
+      camera.fov -= fovIncrement;
+      fovIncrement -= 0.05;
       glutPostRedisplay();
       return;
     default:
@@ -257,7 +262,8 @@ void updateCamera()
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(10, (GLfloat)screenWidth / (GLfloat)screenHeight, 0.1, 20.0);
+  gluPerspective(camera.fov, (GLfloat)screenWidth / (GLfloat)screenHeight,
+                 0.1, 20.0);
 
   int focusY = camera.focus.y + (sumYValues / fractal.pointCount);
   gluLookAt(camera.radius, 0, 0,
@@ -416,6 +422,7 @@ void initCamera()
   Point focusPoint = {0, 0, 0};
   camera.position = position;
   camera.focus = focusPoint;
+  camera.fov = 10;
   camera.radius = defaultRadius;
   camera.latitude = defaultLatitude;
   camera.longitude = defaultLongitude;
