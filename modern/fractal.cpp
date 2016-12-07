@@ -465,6 +465,7 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
 
   // Set extra options.
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
