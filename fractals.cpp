@@ -17,8 +17,8 @@ stringstream stringStream;
 const int defaultDepth = 6;
 const float defaultYRange = 0.2;
 const float defaultDeviance = 0.5;
-const float yRangeIncrement = 0.1;
-const float dFactorIncrement = 0.05;
+const float yRangeIncrement = 0.02;
+const float dFactorIncrement = 0.02;
 float sumYValues;
 Fractal fractal;
 
@@ -26,8 +26,12 @@ Fractal fractal;
 const float defaultRadius = 5;
 const float defaultLatitude = 30;
 const float defaultLongitude = -30;
-float fovIncrement = 1;
+const float defaultFov = 10;
+const float defaultFovIncrement = 1;
+float fovIncrement;
 Camera camera;
+
+int isHelpDisplayed = true;
 
 /**
  * Return a random real number in the given range.
@@ -66,24 +70,14 @@ void setY(int x, int z, float value)
 /**
  * Draw text onto the screen.
  */
-void drawText(int lineNo, string text, float textOffset, float value, float valueOffset)
+void drawText(string text, int widthOffset, int heightOffset)
 {
-  glRasterPos2f(10, windowHeight - (lineNo * 100) - textOffset);
+  glRasterPos2f(widthOffset, windowHeight - heightOffset);
 
   unsigned int i;
   for (i = 0; i < text.length(); i++) {
     glutBitmapCharacter(GLUT_BITMAP_8_BY_13, text[i]);
   }
-
-  stringStream << value;
-  string val(stringStream.str());
-  glRasterPos2f(valueOffset, windowHeight - (lineNo * 100) - textOffset);
-
-  for (i = 0; i < val.length(); i++) {
-    glutBitmapCharacter(GLUT_BITMAP_8_BY_13, val[i]);
-  }
-
-  stringStream.str("");
 }
 
 /**
@@ -91,8 +85,34 @@ void drawText(int lineNo, string text, float textOffset, float value, float valu
  */
 void drawHelpInfo()
 {
+  // draw the interface
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluOrtho2D(0.0, windowWidth, 0.0, windowHeight);
+
+  glColor3f(0.8, 0.8, 0);
+  drawText("Y range = ", 10, 20);
+  drawText("deviance = ", 10, 40);
+  drawText("tree depth = ", 10, 60);
+  drawText(to_string(fractal.yRange), 89, 20);
+  drawText(to_string(fractal.deviance), 97, 40);
+  drawText(to_string(fractal.depth), 113, 60);
+
   glColor3f(0.5, 0.5, 0.5);
-  drawText(0, "Keyboard: S/W = -/+ Y range, A/D = -/+ deviance, Q/E = -/+ tree depth, R = reset values     Tree depth = ", windowHeight - 10, fractal.depth, 850);
+  if (isHelpDisplayed) {
+    drawText("H: toggle help info", 10, windowHeight - 115);
+    drawText("R: reset values", 10, windowHeight - 100);
+    drawText("S,W: -/+ Y range", 10, windowHeight - 85);
+    drawText("A,D: -/+ deviance", 10, windowHeight - 70);
+    drawText("Q,E: -/+ tree depth", 10, windowHeight - 55);
+    drawText("-,=: -/+ zoom", 10, windowHeight - 40);
+    drawText("Spacebar: regenerate fractal", 10, windowHeight - 25);
+    drawText("Mouse: left click and drag to rotate the fractal", 10, windowHeight - 10);
+  } else {
+    drawText("H: toggle help info", 10, windowHeight - 10);
+  }
 }
 
 /**
@@ -198,6 +218,8 @@ void keyboard(unsigned char key, int x, int y)
       break;
     case 'r':
       initFractal(defaultDepth, defaultYRange, defaultDeviance);
+      camera.fov = defaultFov;
+      fovIncrement = defaultFovIncrement;
       break;
     case '-':
       // camera.focus.y += 0.01;
@@ -209,6 +231,10 @@ void keyboard(unsigned char key, int x, int y)
       // camera.focus.y -= 0.01;
       camera.fov -= fovIncrement;
       fovIncrement -= 0.05;
+      glutPostRedisplay();
+      return;
+    case 'h':
+      isHelpDisplayed = !isHelpDisplayed;
       glutPostRedisplay();
       return;
     default:
@@ -330,17 +356,7 @@ void display()
     glEnd();
   }
 
-  // draw the interface
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluOrtho2D(0.0, windowWidth, 0.0, windowHeight);
-  glColor3f(0.8, 0.8, 0);
-  drawText(0, "Y range = ", 20, fractal.yRange, 89);
-  drawText(0, "deviance = ", 40, fractal.deviance, 97);
   drawHelpInfo();
-
   glutSwapBuffers();
 }
 
@@ -422,7 +438,8 @@ void initCamera()
   Point focusPoint = {0, 0, 0};
   camera.position = position;
   camera.focus = focusPoint;
-  camera.fov = 10;
+  camera.fov = defaultFov;
+  fovIncrement = defaultFovIncrement;
   camera.radius = defaultRadius;
   camera.latitude = defaultLatitude;
   camera.longitude = defaultLongitude;

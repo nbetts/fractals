@@ -47,7 +47,7 @@ double randomNumber(double min, double max);
 float average(initializer_list<float> values);
 float getY(int x, int z);
 void setY(int x, int z, float value);
-void drawText(int lineNo, string text, float textOffset, float value, float valueOffset);
+void drawText(string text, int widthOffset, int heightOffset);
 void drawHelpInfo();
 void initFractal(int depth, float yRange, float deviance);
 void createFractal();
