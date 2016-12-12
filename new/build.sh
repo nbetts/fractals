@@ -1,12 +1,13 @@
 #!/bin/bash
-file=main.cpp
-program=${file%.*}
+filepath=src/main.cpp
+program=${filepath##src/}
+output=${program%.*}
 
 function compile {
   if [[ "$OSTYPE" == "linux"* ]]; then
-    output="$((g++ -std=c++11 -Wall -Wno-deprecated -O3 -fomit-frame-pointer -pipe -DFX -DXMESA -lGL -lGLU -lglut -lX11 -lm -g $file -o $program) 2>&1)"
+    errs="$((g++ -std=c++11 -Wall -Wno-deprecated -O3 -fomit-frame-pointer -pipe -DFX -DXMESA -lGL -lGLU -lglut -lX11 -lm -g $filepath -o $output) 2>&1)"
   elif [[ "$OSTYPE" == "darwin"* ]]; then
-    output="$((g++ -std=c++11 -Wall -O3 -framework OpenGL -I/usr/local/include -L/usr/local/lib -lglfw3 -lGLEW $file -o $program) 2>&1)"
+    errs="$((g++ -std=c++11 -Wall -O3 -framework OpenGL -I/usr/local/include -L/usr/local/lib -lglfw3 -lGLEW $filepath -o $output) 2>&1)"
   else
     echo "OS not supported"
     exit -1
@@ -17,16 +18,16 @@ function compile {
 while getopts ":xr" opt; do
   case $opt in
     x) # immediately run the program
-      ./$program "${@:2}" &
+      ./$output "${@:2}" &
       exit 0
       ;;
     r) # compile then run the program if there are no compile errors/warnings
       compile
-      if [[ -z "${output//$'[[:space:]]'/}" ]]
+      if [[ -z "${errs//$'[[:space:]]'/}" ]]
         then
-          ./$program "${@:2}" &
+          ./$output "${@:2}" &
         else
-          echo "$output"
+          echo "$errs"
           exit -1
       fi
       exit 0

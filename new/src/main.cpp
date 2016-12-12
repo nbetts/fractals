@@ -2,7 +2,7 @@
  * [Program description]
  */
 
-#include "src/main.hpp"
+#include "main.hpp"
 
 // System info
 GLFWwindow* window;
