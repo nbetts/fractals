@@ -8,36 +8,57 @@
 class Fractal
 {
   public:
-    // vertices contain x, y, z, r, g, b (positions, colours)
-    GLfloat* vertexData;
-    // vertex count
-    GLuint vertexCount;
-    // indices tell opengl how to draw the vertices
-    GLuint* indexData;
-    // index count
-    GLuint indexCount;
+    static const GLuint DIMENSIONS = 3;
 
-    // y values of each vertex
-    GLfloat* rawYValues;
-    // number of iterations in the subdivision algorithm
+    /**
+     * depth - number of iterations in the diamond-square algorithm
+     * size - width/height of the fractal
+     * yRange - Y value range per iteration
+     * yRangeIncrement - Y value increment
+     * yDeviance - (+/-) Y value deviance per iteration
+     * yDevianceIncrement - Y deviance increment
+     * baseColour - base colour of the fractal
+     *
+     * indexCount - number of indices for drawing the fractal
+     * vertexCount - number of vertices
+     * attributeCount - number of vertex attributes
+     *
+     * rawYValues - Y value of each vertex after fractal generation
+     * positions - array representing positions of vertices
+     * normals - array representing normals of vertices
+     * colours - array representing final colours of vertices
+     * indexData - index array representing triplets of vertices
+     * vertexData - combined data as [positions, normals, colours]
+     */
     GLuint depth;
-    // width/height of the fractal
     GLuint size;
-    // y value range
     GLfloat yRange;
-    // y range increment
     GLfloat yRangeIncrement;
-    // y value deviance per iteration
     GLfloat yDeviance;
-    // y deviance increment
     GLfloat yDevianceIncrement;
-    // colour
-    glm::vec3 colour;
+    glm::vec3 baseColour;
 
-    Fractal(GLuint depth, GLfloat yRange, GLfloat deviance, glm::vec3 dColour);
+    GLuint indexCount;
+    GLuint vertexCount;
+    GLuint attributeCount;
+
+    GLfloat* rawYValues;
+    GLfloat* positions;
+    GLfloat* normals;
+    GLfloat* colours;
+    GLuint* indexData;
+    GLfloat* vertexData;
+
+    Fractal(GLuint desiredDepth, GLfloat desiredYRange,
+            GLfloat desiredYDeviance, glm::vec3 desiredBaseColour);
     GLvoid  setY(GLuint x, GLuint z, GLfloat value);
     GLfloat getY(GLuint x, GLuint z);
     GLvoid generate();
+    GLvoid generateIndexData();
+    GLvoid generateVertexData();
+    GLvoid updatePositions();
+    GLvoid updateNormals();
+    GLvoid updateColours();
     GLvoid convolve(GLuint kernelSize, GLfloat** kernel);
 };
 

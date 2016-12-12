@@ -3,22 +3,22 @@
 
 # System properties
 isFullScreenEnabled        0        # initial toggle of fullscreen window
-mouseSensitivity           1.0      # mouse movement/scroll sensitivity
 
 # Environment properties
 isLightingEnabled          0        # initial toggle of global lighting 
-backgroundColourRed        0.08     # brightness of red colour (0 - 1.0)
-backgroundColourGreen      0.12     # brightness of green colour (0 - 1.0)
-backgroundColourBlue       0.18     # brightness of blue colour (0 - 1.0)
+backgroundColourRed        0        # brightness of red colour (0 - 1.0)
+backgroundColourGreen      0.76     # brightness of green colour (0 - 1.0)
+backgroundColourBlue       0.98     # brightness of blue colour (0 - 1.0)
 
 # Fractal properties
-fractalDepth               6        # iterations in the fractal generation
+fractalDepth               2        # iterations in the fractal generation
 fractalYRange              0.1      # initial Y range of the fractal
-fractalYDeviance           0.4      # initial Y deviance of the fractal
-fractalColourRed           0.46     # brightness of red colour (0 - 1.0)
+fractalYDeviance           0.8      # initial Y deviance of the fractal
+fractalColourRed           0.06     # brightness of red colour (0 - 1.0)
 fractalColourGreen         0.8      # brightness of green colour (0 - 1.0)
-fractalColourBlue          0.16     # brightness of blue colour (0 - 1.0)
+fractalColourBlue          0.46     # brightness of blue colour (0 - 1.0)
 
 # Camera properties
-movementSpeed              1.0      # movement speed of freemode camera
-cameraFov                  80       # field of view
+cameraMovementSpeed        16.0      # movement speed of freemode camera
+cameraTurnSensitivity      0.2      # mouse movement/scroll sensitivity
+cameraFov                  45       # field of view

@@ -7,13 +7,13 @@
 /**
  * Constructor to create and set the attributes of the camera.
  */
-Camera::Camera(glm::vec3 position, glm::vec3 front, glm::vec3 up, GLfloat yaw,
-               GLfloat pitch, GLfloat movementSpeed, GLfloat turnSensitivity,
-               GLfloat fov)
+Camera::Camera(glm::vec3 desiredPosition, glm::vec3 desiredFront,
+               glm::vec3 desiredUp, GLfloat yaw, GLfloat pitch,
+               GLfloat movementSpeed, GLfloat turnSensitivity, GLfloat fov)
 {
-  position = position;
-  front = front;
-  up = up;
+  position = desiredPosition;
+  front = desiredFront;
+  up = desiredUp;
 
   view = glm::mat4();
   projection = glm::mat4();

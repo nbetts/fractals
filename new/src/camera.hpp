@@ -31,9 +31,9 @@ class Camera
     GLfloat turnSensitivity;
     GLfloat fov;
 
-    Camera(glm::vec3 position, glm::vec3 front, glm::vec3 up, GLfloat yaw,
-           GLfloat pitch, GLfloat movementSpeed, GLfloat turnSensitivity,
-           GLfloat fov);
+    Camera(glm::vec3 desiredPosition, glm::vec3 desiredFront,
+           glm::vec3 desiredUp, GLfloat yaw, GLfloat pitch,
+           GLfloat movementSpeed, GLfloat turnSensitivity, GLfloat fov);
     glm::mat4 getLookAtMatrix();
     GLvoid updatePosition(Direction direction, GLfloat deltaTime);
     GLvoid updateOrientation(GLfloat newYaw, GLfloat newPitch);

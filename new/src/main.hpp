@@ -31,7 +31,7 @@ GLvoid updateCamera();
 GLvoid drawGround();
 GLvoid runMainLoop();
 GLvoid initialiseBuffersAndShaders();
-GLvoid updateGroundBuffer();
+GLvoid updateFractalBuffer();
 GLvoid addVertexAttributes(GLuint shaderID);
 GLvoid initialiseGraphics(GLint argc, GLchar* argv[]);
 GLvoid terminateGraphics();
