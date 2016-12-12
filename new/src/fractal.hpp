@@ -38,7 +38,7 @@ class Fractal
     GLvoid  setY(GLuint x, GLuint z, GLfloat value);
     GLfloat getY(GLuint x, GLuint z);
     GLvoid generate();
-    GLvoid convolve(GLuint kernelSize, GLuint** kernel);
+    GLvoid convolve(GLuint kernelSize, GLfloat** kernel);
 };
 
 #endif

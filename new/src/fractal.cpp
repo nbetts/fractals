@@ -36,6 +36,7 @@ GLvoid Fractal::setY(GLuint x, GLuint z, GLfloat value)
                size;
 
   rawYValues[position] = value;
+  vertexData[(position * 6) + 1] = value;
 }
 
 /**
@@ -141,7 +142,27 @@ GLvoid Fractal::generate()
 /**
  * Perform a convolution with a given kernel to smooth the fractal.
  */
-GLvoid Fractal::convolve(GLuint kernelSize, GLuint** kernel)
+GLvoid Fractal::convolve(GLuint kernelSize, GLfloat** kernel)
 {
-  //
+  GLfloat newYValues[size][size];
+  // GLuint centerX = size / 2;
+  // GLuint centerY = size / 2;
+
+  // GLuint ii, jj, mm, nn;
+
+  // for (GLuint i = 0; i < size; i++) {
+  //   for (GLuint j = 0; j < size; j++) {
+  //     for (GLuint k = 0; k < kernelSize; k++) {
+  //       for (GLuint l = 0; l < kernelSize; l++) {
+  //         newYValues[i][j] = 0.0f;
+  //       }
+  //     }
+  //   }
+  // }
+
+  // for (GLuint i = 0; i < size; i++) {
+  //   for (GLuint j = 0; j < size; j++) {
+  //     setY(i, j, newYValues[i][j]);
+  //   }
+  // }
 }

@@ -207,6 +207,9 @@ GLvoid updateFractalBuffer()
 {
   fractal.generate();
 
+  GLfloat** kernel = {0};
+  fractal.convolve(0, kernel);
+
   // Bind the vao, vbo and ebo with the fractal vertex data.
   glBindVertexArray(vao[Shader::FRACTAL]);
   glBindBuffer(GL_ARRAY_BUFFER, vbo[Shader::FRACTAL]);
@@ -302,7 +305,7 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
 
   // Set extra options.
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
+  // glEnable(GL_CULL_FACE);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
