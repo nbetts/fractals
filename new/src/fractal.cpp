@@ -12,18 +12,18 @@ Fractal::Fractal(GLuint desiredDepth, GLfloat desiredYRange,
                  GLfloat desiredYDeviance, glm::vec3 dColour)
 {
   depth = desiredDepth;
-  size = pow(2, depth);
+  size = 2 << (depth - 1);
   yRange = desiredYRange;
   yRangeIncrement = 0.02f;
   yDeviance = desiredYDeviance;
   yDevianceIncrement = 0.02f;
   colour = dColour;
 
-  vertexCount = pow(size, 2);
+  vertexCount = size * size;
   vertexData = new GLfloat[vertexCount * 6];
   rawYValues = new GLfloat[vertexCount];
 
-  indexCount = pow(size - 1, 2) * 6;
+  indexCount = (size - 1) * (size - 1) * 6;
   indexData = new GLuint[indexCount];
 }
 
@@ -136,4 +136,12 @@ GLvoid Fractal::generate()
 
     increment++;
   }
+}
+
+/**
+ * Perform a convolution with a given kernel to smooth the fractal.
+ */
+GLvoid Fractal::convolve(GLuint kernelSize, GLuint** kernel)
+{
+  //
 }
