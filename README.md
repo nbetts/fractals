@@ -1,3 +1,2 @@
 # fractals
-To compile: ./compile_opengl.sh fractals.cpp
-Ensure you have Xcode and Xquartz installed to compile with Glut on Mac
+Requires glfw3, glew (and glm) to compile.
