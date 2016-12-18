@@ -37,6 +37,8 @@ Camera camera(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f),
 Fractal fractal(0, 0.0f, 0.0f, glm::vec3(0.0f));
 GLfloat backgroundColour[3];
 
+GLuint areNormalsEnabled = false;
+
 /**
  * Listen for keyboard events.
  */
@@ -225,22 +227,25 @@ GLvoid drawFractal()
   glDrawElements(GL_TRIANGLES, fractal.indexCount, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
 
-  glUseProgram(normalShader);
-  
-  modelLoc      = glGetUniformLocation(normalShader, "model");
-  viewLoc       = glGetUniformLocation(normalShader, "view");
-  projectionLoc = glGetUniformLocation(normalShader, "projection");
+  // temp normals
+  if (areNormalsEnabled) {
+    glUseProgram(normalShader);
+    
+    modelLoc      = glGetUniformLocation(normalShader, "model");
+    viewLoc       = glGetUniformLocation(normalShader, "view");
+    projectionLoc = glGetUniformLocation(normalShader, "projection");
 
-  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(camera.view));
-  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(camera.projection));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(camera.view));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(camera.projection));
 
-  glBindVertexArray(vao[Shader::NORMAL]);
-  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
+    glBindVertexArray(vao[Shader::NORMAL]);
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
 
-  glDisable(GL_CULL_FACE);
-  glDrawArrays(GL_LINES, 0, fractal.vertexCount * 2);
-  glEnable(GL_CULL_FACE);
-  glBindVertexArray(0);
+    glDisable(GL_CULL_FACE);
+    glDrawArrays(GL_LINES, 0, fractal.vertexCount * 2);
+    glEnable(GL_CULL_FACE);
+    glBindVertexArray(0);
+  }
 }
 
 /**
@@ -471,6 +476,7 @@ GLint main(GLint argc, GLchar* argv[])
                     glm::vec3(env["fractalColourRed"],
                               env["fractalColourGreen"],
                               env["fractalColourBlue"]));
+  areNormalsEnabled = env["areNormalsEnabled"];
 
   // Initialise the graphics environment.
   initialiseGraphics(argc, argv);

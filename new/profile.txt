@@ -4,6 +4,7 @@
 # System properties
 isFullScreenEnabled        0        # initial toggle of fullscreen window
 isFacesEnabled             1        # initial toggle of showing polygon faces
+areNormalsEnabled          0        # initial toggle of visual vertex normals
 
 # Environment properties
 isLightingEnabled          0        # initial toggle of global lighting 
