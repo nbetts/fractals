@@ -13,7 +13,7 @@ backgroundColourGreen      0.0     # brightness of green colour (0 - 1.0)
 backgroundColourBlue       0.0     # brightness of blue colour (0 - 1.0)
 
 # Fractal properties
-fractalDepth               8        # iterations in the fractal generation
+fractalDepth               9        # iterations in the fractal generation
 fractalYRange              0.2      # initial Y range of the fractal
 fractalYDeviance           0.5      # initial Y deviance of the fractal
 fractalColourRed           0.06     # brightness of red colour (0 - 1.0)

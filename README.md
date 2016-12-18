@@ -6,6 +6,7 @@ to run: ./main or ./build -x
 
 Keyboard:
 use the WASD keys and mouse to move the camera
+use the IJKL keys to move the light source
 F = toggle faces
 N = toggle normals
 SPACE = regenerate fractal
