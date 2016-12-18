@@ -67,6 +67,10 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
       }
       env["isFacesEnabled"] = !env["isFacesEnabled"];
       break;
+    case GLFW_KEY_N:
+      areNormalsEnabled = !areNormalsEnabled;
+      env["areNormalsEnabled"] = areNormalsEnabled;
+      break;
   }
 }
 
