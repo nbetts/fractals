@@ -200,12 +200,12 @@ GLvoid Fractal::updateNormals()
   glm::vec3 p1, p2, p3, v1, v2, normal;
 
   for (GLuint i = 0; i < vertexCount; i++) {
-    p1 = glm::vec3(positions[(increment + 0) % vertexCount],
-                   positions[(increment + 1) % vertexCount],
-                   positions[(increment + 2) % vertexCount]);
-    p2 = glm::vec3(positions[(increment + 3) % vertexCount],
-                   positions[(increment + 4) % vertexCount],
-                   positions[(increment + 5) % vertexCount]);
+    p1 = glm::vec3(positions[(increment + 0) % (vertexCount * DIMENSIONS)],
+                   positions[(increment + 1) % (vertexCount * DIMENSIONS)],
+                   positions[(increment + 2) % (vertexCount * DIMENSIONS)]);
+    p2 = glm::vec3(positions[(increment + 3) % (vertexCount * DIMENSIONS)],
+                   positions[(increment + 4) % (vertexCount * DIMENSIONS)],
+                   positions[(increment + 5) % (vertexCount * DIMENSIONS)]);
     p3 = glm::vec3(positions[((size * DIMENSIONS) + increment + 0) %
                              (vertexCount * DIMENSIONS)],
                    positions[((size * DIMENSIONS) + increment + 1) %
@@ -291,7 +291,7 @@ GLvoid Fractal::updateColours()
 GLvoid Fractal::convolve(GLuint kernelSize, GLfloat** kernel)
 {
   // TODO
-  
+
   // GLfloat newYValues[size][size];
   // GLuint centerX = size / 2;
   // GLuint centerY = size / 2;
