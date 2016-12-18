@@ -278,8 +278,8 @@ GLvoid Fractal::updateColours()
       yValue = getY(i, j);
 
       colours[offset++] = baseColour.x;
-      // colours[offset++] = (yValue / yRange) + (baseColour.y / 2.0f);
-      colours[offset++] = baseColour.y;
+      colours[offset++] = (yValue / yRange) + (baseColour.y / 2.0f);
+      // colours[offset++] = baseColour.y;
       colours[offset++] = baseColour.z;
     }
   }
