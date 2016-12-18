@@ -15,6 +15,7 @@ class Shader
   public:
     typedef enum {
       FRACTAL,
+      NORMAL,
       NONE // only used for enum iteration
     } ShaderType;
     

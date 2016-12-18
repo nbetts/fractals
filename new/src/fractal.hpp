@@ -23,10 +23,11 @@ class Fractal
      * vertexCount - number of vertices
      * attributeCount - number of vertex attributes
      *
-     * rawYValues - Y value of each vertex after fractal generation
      * positions - array representing positions of vertices
      * normals - array representing normals of vertices
      * colours - array representing final colours of vertices
+     *
+     * rawYValues - Y value of each vertex after fractal generation
      * indexData - index array representing triplets of vertices
      * vertexData - combined data as [positions, normals, colours]
      */
@@ -42,12 +43,14 @@ class Fractal
     GLuint vertexCount;
     GLuint attributeCount;
 
-    GLfloat* rawYValues;
     GLfloat* positions;
     GLfloat* normals;
     GLfloat* colours;
+
+    GLfloat* rawYValues;
     GLuint* indexData;
     GLfloat* vertexData;
+    GLfloat* normalVertexData;
 
     Fractal(GLuint desiredDepth, GLfloat desiredYRange,
             GLfloat desiredYDeviance, glm::vec3 desiredBaseColour);

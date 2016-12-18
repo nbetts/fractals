@@ -29,6 +29,9 @@ void main()
 {
   vec3 normal = normalize(outNormal);
 
+  // color = vec4((normal + vec3(1.0f)) / 2.0f, 1.0f);
+
+
   vec3 lightDirection = normalize(lightPosition - outPosition);
   vec3 viewDirection = normalize(viewPosition - outPosition);
   vec3 reflectDirection = reflect(-lightDirection, normal);

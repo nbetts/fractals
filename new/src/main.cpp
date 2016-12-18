@@ -10,7 +10,7 @@ GLint frameWidth, frameHeight;
 GLfloat aspectRatio;
 
 // Buffer and shader info.
-GLuint vao[1], vbo[1], ebo[1], fractalShader;
+GLuint vao[2], vbo[2], ebo[2], fractalShader, normalShader;
 
 // environment info
 std::map<std::string, GLfloat> env;
@@ -29,7 +29,7 @@ GLfloat lastTime = 0.0f;
 GLfloat deltaTime = 0.0f;
 
 // lighting info
-glm::vec3 lightPosition(-50.0f, 20.0f, 0.0f);
+glm::vec3 lightPosition(0.0f, 100.0f, 0.0f);
 
 // object info
 Camera camera(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f),
@@ -56,6 +56,14 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
       break;
     case GLFW_KEY_SPACE:
       updateFractalBuffer();
+      break;
+    case GLFW_KEY_F:
+      if (env["isFacesEnabled"]) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      }
+      env["isFacesEnabled"] = !env["isFacesEnabled"];
       break;
   }
 }
@@ -124,6 +132,29 @@ GLvoid updateCamera()
   camera.projection = glm::perspective(glm::radians(camera.getFov()),
                                        aspectRatio, 0.01f, 1000.0f);
   camera.view = camera.getLookAtMatrix();
+
+
+  if (keyPressed[GLFW_KEY_U]) {
+    lightPosition.x += 1.0f;
+  }
+  if (keyPressed[GLFW_KEY_J]) {
+    lightPosition.x -= 1.0f;
+  }
+  if (keyPressed[GLFW_KEY_O]) {
+    lightPosition.z += 1.0f;
+  }
+  if (keyPressed[GLFW_KEY_L]) {
+    lightPosition.z -= 1.0f;
+  }
+  if (keyPressed[GLFW_KEY_I]) {
+    lightPosition.y += 1.0f;
+  }
+  if (keyPressed[GLFW_KEY_K]) {
+    lightPosition.y -= 1.0f;
+  }
+
+  // printf("x= %.2f y= %.2f z= %.2f\n",
+  //        lightPosition.x, lightPosition.y, lightPosition.z);
 }
 
 /**
@@ -152,10 +183,11 @@ GLvoid drawFractal()
   matSpecularLoc = glGetUniformLocation(fractalShader, "material.specular");
   matShineLoc    = glGetUniformLocation(fractalShader, "material.shininess"); 
 
-  glUniform3f(matAmbientLoc,  0.5f, 0.7f, 0.31f);
+  // glUniform3f(matAmbientLoc,  0.2f, 0.4f, 0.31f);
+  glUniform3f(matAmbientLoc,  0.0f, 0.0f, 0.0f);
   glUniform3f(matDiffuseLoc,  0.5f, 0.7f, 0.31f);
-  glUniform3f(matSpecularLoc, 0.3f, 0.3f, 0.3f);
-  glUniform1f(matShineLoc, 2.0f);
+  glUniform3f(matSpecularLoc, 0.2f, 0.2f, 0.2f);
+  glUniform1f(matShineLoc,    0.5f);
 
   // Light uniforms
   lightAmbientLoc  = glGetUniformLocation(fractalShader, "light.ambient");
@@ -191,6 +223,23 @@ GLvoid drawFractal()
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
 
   glDrawElements(GL_TRIANGLES, fractal.indexCount, GL_UNSIGNED_INT, 0);
+  glBindVertexArray(0);
+
+  glUseProgram(normalShader);
+  
+  modelLoc      = glGetUniformLocation(normalShader, "model");
+  viewLoc       = glGetUniformLocation(normalShader, "view");
+  projectionLoc = glGetUniformLocation(normalShader, "projection");
+
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(camera.view));
+  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(camera.projection));
+
+  glBindVertexArray(vao[Shader::NORMAL]);
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
+
+  glDisable(GL_CULL_FACE);
+  glDrawArrays(GL_LINES, 0, fractal.vertexCount * 2);
+  glEnable(GL_CULL_FACE);
   glBindVertexArray(0);
 }
 
@@ -240,6 +289,9 @@ GLvoid initialiseBuffersAndShaders()
   // Load the vertex and fragment shaders into a shader program.
   Shader shader("src/shaders/fractal.vert", "src/shaders/fractal.frag");
   fractalShader = shader.getProgramID();
+
+  shader = Shader("src/shaders/normal.vert", "src/shaders/normal.frag");
+  normalShader = shader.getProgramID();
 }
 
 /**
@@ -252,19 +304,31 @@ GLvoid updateFractalBuffer()
   // GLfloat** kernel = {0};
   // fractal.convolve(0, kernel);
 
-  // Bind the vao, vbo and ebo with the fractal vertex data.
-  GLfloat vertexBufferSize = fractal.vertexCount * fractal.attributeCount *
-                             fractal.DIMENSIONS * sizeof(GLfloat);
+  GLfloat vertexBufferSize = fractal.vertexCount * fractal.DIMENSIONS *
+                             fractal.attributeCount * sizeof(GLfloat);
+  GLfloat indexBufferSize = fractal.indexCount * sizeof(GLuint);
 
   glBindVertexArray(vao[Shader::FRACTAL]);
   glBindBuffer(GL_ARRAY_BUFFER, vbo[Shader::FRACTAL]);
   glBufferData(GL_ARRAY_BUFFER, vertexBufferSize,
                fractal.vertexData, GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[Shader::FRACTAL]);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, fractal.indexCount * sizeof(GLuint),
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize,
                fractal.indexData, GL_STATIC_DRAW);
 
   addVertexAttributes(fractalShader);
+
+  // temp
+  glBindVertexArray(vao[Shader::NORMAL]);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo[Shader::NORMAL]);
+  glBufferData(GL_ARRAY_BUFFER, fractal.vertexCount * fractal.DIMENSIONS * 2 * sizeof(GLfloat),
+               fractal.normalVertexData, GL_STATIC_DRAW);
+
+  GLint attribute = glGetAttribLocation(normalShader, "position");
+  glVertexAttribPointer(attribute, 3, GL_FLOAT,
+                        GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+  glEnableVertexAttribArray(attribute);
+  // temp end
 
   // Unbind the vao, vbo and ebo.
   glBindVertexArray(0);
@@ -351,8 +415,11 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
 
   // Set extra options.
   glEnable(GL_DEPTH_TEST);
-  // glEnable(GL_CULL_FACE);
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glEnable(GL_CULL_FACE);
+  glShadeModel(GL_FLAT);
+  if (!env["isFacesEnabled"]) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   // Set the clear colour value.
