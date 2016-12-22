@@ -27,9 +27,9 @@ class Fractal
      * normals - array representing normals of vertices
      * colours - array representing final colours of vertices
      *
-     * rawYValues - Y value of each vertex after fractal generation
      * indexData - index array representing triplets of vertices
      * vertexData - combined data as [positions, normals, colours]
+     * normalVertexData - similar to vertexData but for normals
      */
     GLuint depth;
     GLuint size;
@@ -47,7 +47,6 @@ class Fractal
     GLfloat* normals;
     GLfloat* colours;
 
-    GLfloat* rawYValues;
     GLuint* indexData;
     GLfloat* vertexData;
     GLfloat* normalVertexData;
