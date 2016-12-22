@@ -110,7 +110,7 @@ GLvoid Fractal::generate()
   smoothPositions(kernel);
 
   updateNormals();
-  updateColours();
+  updateColours(0.015f);
 
   generateVertexData();
   generateNormalVertexData();
@@ -172,7 +172,6 @@ GLvoid Fractal::updateNormals()
     normal.x = (v1.y * v2.z) - (v1.z * v2.y);
     normal.y = (v1.z * v2.x) - (v1.x * v2.z);
     normal.z = (v1.x * v2.y) - (v1.y * v2.x);
-    // normal = glm::cross(v1, v2);
     normal = glm::normalize(normal);
 
     normals[offset++] = normal.x;
@@ -184,20 +183,22 @@ GLvoid Fractal::updateNormals()
 }
 
 /**
- * Update the colour of each vertex.
+ * Update the colour of each vertex. Noise (greyscale) can be added to vary the
+ * vertex colours.
  */
-GLvoid Fractal::updateColours()
+GLvoid Fractal::updateColours(GLfloat noise)
 {
   GLuint offset = 0;
-  GLfloat yValue;
+  // GLfloat yValue;
 
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
-      yValue = getY(i, j);
+      // yValue = getY(i, j);
+      GLfloat randomNoise = randomNumber(-noise, noise);
 
-      colours[offset++] = baseColour.x;
-      colours[offset++] = baseColour.y + randomNumber(-0.2f, 0.2f);
-      colours[offset++] = baseColour.z;
+      colours[offset++] = baseColour.x + randomNoise;
+      colours[offset++] = baseColour.y + randomNoise;
+      colours[offset++] = baseColour.z + randomNoise;
     }
   }
 }

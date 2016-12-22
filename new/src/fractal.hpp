@@ -62,7 +62,7 @@ class Fractal
     GLvoid generateNormalVertexData();
     GLvoid updatePositions();
     GLvoid updateNormals();
-    GLvoid updateColours();
+    GLvoid updateColours(GLfloat noise);
     GLvoid smoothPositions(std::vector<std::vector<GLfloat>> kernel);
     GLvoid smoothNormals(std::vector<std::vector<GLfloat>> kernel);
     GLvoid smoothColours(std::vector<std::vector<GLfloat>> kernel);
