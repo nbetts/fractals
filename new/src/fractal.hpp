@@ -66,6 +66,8 @@ class Fractal
     GLvoid smoothPositions(std::vector<std::vector<GLfloat>> kernel);
     GLvoid smoothNormals(std::vector<std::vector<GLfloat>> kernel);
     GLvoid smoothColours(std::vector<std::vector<GLfloat>> kernel);
+    std::vector<std::vector<GLfloat>> createGaussianKernel(GLuint size,
+                                                           GLfloat sigma);
 };
 
 #endif

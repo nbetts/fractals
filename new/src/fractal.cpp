@@ -104,10 +104,7 @@ GLvoid Fractal::generate()
   }
 
   updatePositions();
-  std::vector<std::vector<GLfloat>> kernel = {{0.0625f, 0.125f, 0.0625f},
-                                              { 0.125f, 0.25f,  0.125f},
-                                              {0.0625f, 0.125f, 0.0625f}};
-  smoothPositions(kernel);
+  smoothPositions(createGaussianKernel(3, 5.0f));
 
   updateNormals();
   updateColours(0.015f);
@@ -345,4 +342,36 @@ GLvoid Fractal::smoothNormals(std::vector<std::vector<GLfloat>> kernel)
 GLvoid Fractal::smoothColours(std::vector<std::vector<GLfloat>> kernel)
 {
   // TODO
+}
+
+/**
+ * Create a Gaussian filter kernel of a given size and sigma value.
+ */
+std::vector<std::vector<GLfloat>> Fractal::createGaussianKernel(GLuint size,
+                                                                GLfloat sigma)
+{
+  std::vector<std::vector<GLfloat>> kernel(size, std::vector<GLfloat>(size));
+
+  GLuint halfSize = size / 2;
+  GLfloat denominator = 2.0f * M_PI * sigma * sigma;
+  GLfloat accumulator = 0.0f;
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      GLfloat val = exp(-0.5f * (pow(((GLfloat)i - halfSize) / sigma, 2.0f) +
+                                 pow(((GLfloat)j - halfSize) / sigma, 2.0f))) /
+                    denominator;
+
+      accumulator += val;
+      kernel[i][j] = val;
+    }
+  }
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      kernel[i][j] /= accumulator;
+    }
+  }
+
+  return kernel;
 }
