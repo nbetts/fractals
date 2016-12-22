@@ -6,7 +6,7 @@ The aim of this program is to illustrate different types of fractals and allow y
 
 * Diamond-square algorithm:
 
-![alt-text](https://github.com/nbetts/fractals/tree/master/new/images/D-S_fractal_screenshot.png "Diamond-square algorithm image example")
+![alt-text](images/dsa_screenshot.jpg "Diamond-square algorithm image example")
 
 ## Input Controls
 
