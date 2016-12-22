@@ -59,10 +59,13 @@ class Fractal
     GLvoid generate();
     GLvoid generateIndexData();
     GLvoid generateVertexData();
+    GLvoid generateNormalVertexData();
     GLvoid updatePositions();
     GLvoid updateNormals();
     GLvoid updateColours();
-    GLvoid convolve(GLuint kernelSize, GLfloat** kernel);
+    GLvoid smoothPositions(std::vector<std::vector<GLfloat>> kernel);
+    GLvoid smoothNormals(std::vector<std::vector<GLfloat>> kernel);
+    GLvoid smoothColours(std::vector<std::vector<GLfloat>> kernel);
 };
 
 #endif

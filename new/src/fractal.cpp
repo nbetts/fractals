@@ -39,6 +39,7 @@ GLvoid Fractal::setY(GLuint x, GLuint z, GLfloat value)
   GLuint position = (x & (size - 1)) + (z & (size - 1)) * size;
 
   rawYValues[position] = value;
+  positions[position * DIMENSIONS + 1] = value;
   vertexData[(position * DIMENSIONS * attributeCount) + 1] = value;
 }
 
@@ -103,72 +104,17 @@ GLvoid Fractal::generate()
   }
 
   updatePositions();
+  std::vector<std::vector<GLfloat>> kernel = {{0.0625f, 0.125f, 0.0625f},
+                                              { 0.125f, 0.25f,  0.125f},
+                                              {0.0625f, 0.125f, 0.0625f}};
+  smoothPositions(kernel);
+
   updateNormals();
   updateColours();
+
   generateVertexData();
+  generateNormalVertexData();
   generateIndexData();
-}
-
-/**
- * Generate the index data.
- */
-GLvoid Fractal::generateIndexData()
-{
-  GLuint offset = 0, increment = 0;
-
-  for (GLuint i = 0; i < size; i++) {
-    for (GLuint j = 0; j < size - 1; j++) {
-      if (increment != 0 && (increment + 1) % size == 0) {
-        increment++;
-        continue;
-      }
-
-      indexData[offset++] = increment;
-      indexData[offset++] = increment + 1;
-      indexData[offset++] = increment + size;
-
-      indexData[offset++] = increment + size;
-      indexData[offset++] = increment + 1;
-      indexData[offset++] = increment + size + 1;
-
-      increment++;
-    }
-  }
-}
-
-/**
- * Generate the vertex data.
- */
-GLvoid Fractal::generateVertexData()
-{
-  GLuint offset = 0, increment = 0;
-
-  for (GLuint i = 0; i < vertexCount; i++) {
-    vertexData[offset++] = positions[increment + 0];
-    vertexData[offset++] = positions[increment + 1];
-    vertexData[offset++] = positions[increment + 2];
-
-    vertexData[offset++] = normals[increment + 0];
-    vertexData[offset++] = normals[increment + 1];
-    vertexData[offset++] = normals[increment + 2];
-
-    vertexData[offset++] = colours[increment + 0];
-    vertexData[offset++] = colours[increment + 1];
-    vertexData[offset++] = colours[increment + 2];
-
-    increment += DIMENSIONS;
-
-    // printf("v %.2f %.2f %.2f   n %.2f %.2f %.2f   c %.2f %.2f %.2f\n",
-    //          vertexData[offset - 9],
-    //          vertexData[offset - 8],
-    //          vertexData[offset - 7],
-    //          vertexData[offset - 6],
-    //          vertexData[offset - 5],
-    //          vertexData[offset - 4],
-    //          vertexData[offset - 3],
-    //          vertexData[offset - 2],
-    //          vertexData[offset - 1]);
-  }
 }
 
 /**
@@ -235,8 +181,68 @@ GLvoid Fractal::updateNormals()
 
     increment += DIMENSIONS;
   }
+}
 
-  offset = 0, increment = 0;
+/**
+ * Update the colour of each vertex.
+ */
+GLvoid Fractal::updateColours()
+{
+  GLuint offset = 0;
+  GLfloat yValue;
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      yValue = getY(i, j);
+
+      colours[offset++] = baseColour.x;
+      colours[offset++] = baseColour.y;
+      colours[offset++] = baseColour.z;
+    }
+  }
+}
+
+/**
+ * Generate the vertex data.
+ */
+GLvoid Fractal::generateVertexData()
+{
+  GLuint offset = 0, increment = 0;
+
+  for (GLuint i = 0; i < vertexCount; i++) {
+    vertexData[offset++] = positions[increment + 0];
+    vertexData[offset++] = positions[increment + 1];
+    vertexData[offset++] = positions[increment + 2];
+
+    vertexData[offset++] = normals[increment + 0];
+    vertexData[offset++] = normals[increment + 1];
+    vertexData[offset++] = normals[increment + 2];
+
+    vertexData[offset++] = colours[increment + 0];
+    vertexData[offset++] = colours[increment + 1];
+    vertexData[offset++] = colours[increment + 2];
+
+    increment += DIMENSIONS;
+
+    // printf("v %.2f %.2f %.2f   n %.2f %.2f %.2f   c %.2f %.2f %.2f\n",
+    //          vertexData[offset - 9],
+    //          vertexData[offset - 8],
+    //          vertexData[offset - 7],
+    //          vertexData[offset - 6],
+    //          vertexData[offset - 5],
+    //          vertexData[offset - 4],
+    //          vertexData[offset - 3],
+    //          vertexData[offset - 2],
+    //          vertexData[offset - 1]);
+  }
+}
+
+/**
+ * Generate the normal vertex data.
+ */
+GLvoid Fractal::generateNormalVertexData()
+{
+  GLuint offset = 0, increment = 0;
 
   for (GLuint i = 0; i < vertexCount; i++) {
     normalVertexData[offset++] = positions[increment + 0];
@@ -266,51 +272,75 @@ GLvoid Fractal::updateNormals()
 }
 
 /**
- * Update the colour of each vertex.
+ * Generate the index data.
  */
-GLvoid Fractal::updateColours()
+GLvoid Fractal::generateIndexData()
 {
-  GLuint offset = 0;
-  GLfloat yValue;
+  GLuint offset = 0, increment = 0;
 
   for (GLuint i = 0; i < size; i++) {
-    for (GLuint j = 0; j < size; j++) {
-      yValue = getY(i, j);
+    for (GLuint j = 0; j < size - 1; j++) {
+      if (increment != 0 && (increment + 1) % size == 0) {
+        increment++;
+        continue;
+      }
 
-      colours[offset++] = baseColour.x;
-      colours[offset++] = (yValue / yRange) + (baseColour.y / 2.0f);
-      // colours[offset++] = baseColour.y;
-      colours[offset++] = baseColour.z;
+      indexData[offset++] = increment;
+      indexData[offset++] = increment + 1;
+      indexData[offset++] = increment + size;
+
+      indexData[offset++] = increment + size;
+      indexData[offset++] = increment + 1;
+      indexData[offset++] = increment + size + 1;
+
+      increment++;
     }
   }
 }
 
 /**
- * Perform a convolution with a given kernel to smooth the fractal.
+ * Perform a convolution with a given kernel to smooth the fractal vertices.
  */
-GLvoid Fractal::convolve(GLuint kernelSize, GLfloat** kernel)
+GLvoid Fractal::smoothPositions(std::vector<std::vector<GLfloat>> kernel)
+{
+  GLuint kernelSize = kernel.size();
+  GLfloat accumulator;
+  GLfloat newYValues[size][size];
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      accumulator = 0.0f;
+
+      for (GLuint k = 0; k < kernelSize; k++) {
+        for (GLuint l = 0; l < kernelSize; l++) {
+          accumulator += getY(i + (k - (kernelSize / 2)),
+                              j + (l - (kernelSize / 2))) *
+                         kernel[k][l];
+        }
+      }
+      newYValues[i][j] = accumulator;
+    }
+  }
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      setY(i, j, newYValues[i][j]);
+    }
+  }
+}
+
+/**
+ * Perform a convolution with a given kernel to smooth the fractal normals.
+ */
+GLvoid Fractal::smoothNormals(std::vector<std::vector<GLfloat>> kernel)
 {
   // TODO
+}
 
-  // GLfloat newYValues[size][size];
-  // GLuint centerX = size / 2;
-  // GLuint centerY = size / 2;
-
-  // GLuint ii, jj, mm, nn;
-
-  // for (GLuint i = 0; i < size; i++) {
-  //   for (GLuint j = 0; j < size; j++) {
-  //     for (GLuint k = 0; k < kernelSize; k++) {
-  //       for (GLuint l = 0; l < kernelSize; l++) {
-  //         newYValues[i][j] = 0.0f;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // for (GLuint i = 0; i < size; i++) {
-  //   for (GLuint j = 0; j < size; j++) {
-  //     setY(i, j, newYValues[i][j]);
-  //   }
-  // }
+/**
+ * Perform a convolution with a given kernel to smooth the fractal colours.
+ */
+GLvoid Fractal::smoothColours(std::vector<std::vector<GLfloat>> kernel)
+{
+  // TODO
 }
