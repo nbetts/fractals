@@ -196,7 +196,7 @@ GLvoid Fractal::updateColours()
       yValue = getY(i, j);
 
       colours[offset++] = baseColour.x;
-      colours[offset++] = baseColour.y;
+      colours[offset++] = baseColour.y + randomNumber(-0.2f, 0.2f);
       colours[offset++] = baseColour.z;
     }
   }
@@ -243,6 +243,7 @@ GLvoid Fractal::generateVertexData()
 GLvoid Fractal::generateNormalVertexData()
 {
   GLuint offset = 0, increment = 0;
+  GLfloat normalLength = 1.0f / size;
 
   for (GLuint i = 0; i < vertexCount; i++) {
     normalVertexData[offset++] = positions[increment + 0];
@@ -250,11 +251,11 @@ GLvoid Fractal::generateNormalVertexData()
     normalVertexData[offset++] = positions[increment + 2];
 
     normalVertexData[offset++] = positions[increment + 0] +
-                                 (normals[increment + 0] * 0.01f);
+                                 (normals[increment + 0] * normalLength);
     normalVertexData[offset++] = positions[increment + 1] +
-                                 (normals[increment + 1] * 0.01f);
+                                 (normals[increment + 1] * normalLength);
     normalVertexData[offset++] = positions[increment + 2] +
-                                 (normals[increment + 2] * 0.01f);
+                                 (normals[increment + 2] * normalLength);
 
     // printf("v %.2f %.2f %.2f\tn %.2f %.2f %.2f\tnvd %.2f %.2f %.2f\n",
     //        positions[increment + 0],
