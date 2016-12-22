@@ -190,9 +190,9 @@ GLvoid drawFractal()
   matShineLoc    = glGetUniformLocation(fractalShader, "material.shininess"); 
 
   // glUniform3f(matAmbientLoc,  0.2f, 0.4f, 0.31f);
-  glUniform3f(matAmbientLoc,  0.0f, 0.0f, 0.0f);
-  glUniform3f(matDiffuseLoc,  0.5f, 0.7f, 0.31f);
-  glUniform3f(matSpecularLoc, 0.2f, 0.2f, 0.2f);
+  glUniform3f(matAmbientLoc,  0.1f, 0.1f, 0.1f);
+  glUniform3f(matDiffuseLoc,  0.63f, 0.63f, 0.63f);
+  glUniform3f(matSpecularLoc, 0.42f, 0.42f, 0.42f);
   glUniform1f(matShineLoc,    0.5f);
 
   // Light uniforms
@@ -200,7 +200,7 @@ GLvoid drawFractal()
   lightDiffuseLoc  = glGetUniformLocation(fractalShader, "light.diffuse");
   lightSpecularLoc = glGetUniformLocation(fractalShader, "light.specular");
 
-  glUniform3f(lightAmbientLoc,  0.5f, 0.5f, 0.5f);
+  glUniform3f(lightAmbientLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightDiffuseLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
 
