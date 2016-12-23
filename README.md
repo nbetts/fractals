@@ -79,7 +79,9 @@ These following settings allow you to adjust various parameters before running t
 
 * [GLFW 3.0](https://github.com/glfw/glfw)
 * [GLEW 2.0.0 - The OpenGL Extension Wrangler Library](https://github.com/nigels-com/glew)
-* [OpenGL Mathematics (GLM)](https://github.com/g-truc/glm) (included)
+* [OpenGL Mathematics (GLM)](https://github.com/g-truc/glm)
+
+If you have [Homebrew](http://brew.sh/), you can install these using `brew install glfw3 glew glm`.
 
 ## Compiling/Running
 

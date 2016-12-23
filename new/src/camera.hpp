@@ -5,7 +5,7 @@
 #ifndef CAMERA_HEADER
 #define CAMERA_HEADER
 
-#include "glm/glm/glm.hpp"
+#include <glm/glm.hpp>
 
 class Camera
 {
