@@ -11,7 +11,6 @@ A list of upcoming features I'd like to accomplish.
 
 # Environment properties
 - shadows
-- point/directional lighting toggle
 - light mapping once ground textures are implemented
 - move light ambient/diffuse/specular attributes to profile.txt
 
@@ -22,3 +21,5 @@ A list of upcoming features I'd like to accomplish.
 - custom colour height maps for realistic looking terrain
 - ground textures
 - move material ambient/diffuse/specular attributes to profile.txt
+- instancing to increase the percieved size of the fractal
+- move vertex normals to a geometry shader
