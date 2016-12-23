@@ -3,7 +3,7 @@ A list of upcoming features I'd like to accomplish.
 
 # System properties
 - refactor fractal class into specific fractal types
-- add more types of fractals
+- add more types of fractals (see fractals.txt)
 - build a system for switching between types of fractals
 - GUI-like parameter customisation
 - GUI text for presenting fractal information/debugging

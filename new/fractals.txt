@@ -1,0 +1,35 @@
+# Deterministic fractals (2D)
+- Sierpinski triangle
+- Apollonian gasket
+- Mandelbrot
+- Sierpinski carpet
+- Cantor dust
+- Penrose tiling
+- Moore curve
+- Koch snowflake
+- Dragon curve
+- Barnsley fern
+
+# Deterministic fractals (3D)
+- Sierpinski tetrahedron
+- Apollonian sphere packing
+- Mandel bulb
+- Menger sponge (3D verison of Sierpinski carpet)
+- Cantor cube
+- Penrose tiling in 3D
+- Moore curve in 3D
+- Koch snowflake curve in 3D
+- Romanesco broccoli
+
+
+# Non-deterministic fractals (2D)
+- Midpoint displacement
+- Diffusion-limited aggregation cluster
+- Lichtenberg figure
+- percolation cluster
+
+# Non-deterministic fractals (3D)
+- Diamond-square
+- Diffusion-limited aggregation cluster in 3D
+- Lichtenberg figure in 3D
+- percolation cluster in 3D
