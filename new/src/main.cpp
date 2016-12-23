@@ -58,6 +58,7 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
       glfwSetWindowShouldClose(window, GL_TRUE);
       break;
     case GLFW_KEY_SPACE:
+      generateFractal();
       updateFractalBuffer();
       break;
     case GLFW_KEY_F:
@@ -170,13 +171,33 @@ GLvoid updateCamera()
 GLvoid generateFractal()
 {
   fractal.generate();
+  GLuint isModified = false;
 
-  fractal.smoothPositions(fractal.createGaussianKernel(3, 5.0f));
-  fractal.smoothNormals(fractal.createBoxKernel(3));
-  fractal.smoothColours(fractal.createGaussianKernel(2, 2.0f));
-  fractal.addColourNoise(0.014f);
+  if (env["isSmoothingPositionsEnabled"]) {
+    fractal.smoothPositions(fractal.createGaussianKernel(
+                            env["smoothPositionsKernelSize"],
+                            env["smoothPositionsSigmaValue"]));
+    isModified = true;
+  }
+  if (env["isSmoothingPositionsEnabled"]) {
+    fractal.smoothNormals(fractal.createBoxKernel(
+                          env["smoothNormalsKernelSize"]));
+    isModified = true;
+  }
+  if (env["isSmoothingPositionsEnabled"]) {
+    fractal.smoothColours(fractal.createGaussianKernel(
+                          env["smoothColoursKernelSize"],
+                          env["smoothColoursSigmaValue"]));
+    isModified = true;
+  }
+  if (env["isSmoothingPositionsEnabled"]) {
+    fractal.addColourNoise(env["colourNoiseLevel"]);
+    isModified = true;
+  }
 
-  fractal.updateVertexData();
+  if (isModified) {
+    fractal.updateVertexData();
+  }
 }
 
 /**
