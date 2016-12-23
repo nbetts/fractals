@@ -28,6 +28,7 @@ Move the mouse to turn the camera and zoom with the mouse scroll.
 | L     | move light right      |
 | F     | toggle facets         |
 | N     | toggle vertex normals |
+| Z     | invert fractal shine  |
 
 ## Profile Settings
 These following settings allow you to adjust various parameters before running the simulation and can be found in `profile.txt`.

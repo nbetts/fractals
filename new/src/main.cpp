@@ -16,7 +16,7 @@ GLuint vao[2], vbo[2], ebo[2], fractalShader, normalShader;
 std::map<std::string, GLfloat> env;
 
 // keyboard info
-GLuint keyPressed[256];
+GLuint keyPressed[512];
 
 // mouse info
 GLfloat lastMouseX = DEFAULT_WINDOW_WIDTH / 2.0f;
@@ -38,6 +38,7 @@ Fractal fractal(0, 0.0f, 0.0f, glm::vec3(0.0f));
 GLfloat backgroundColour[3];
 
 GLuint areNormalsEnabled = false;
+GLfloat shineValue = 1.0f;
 
 /**
  * Listen for keyboard events.
@@ -45,10 +46,6 @@ GLuint areNormalsEnabled = false;
 GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
                 GLint action, GLint mode)
 {
-  if (key > 256) {
-    return;
-  }
-
   // Store the action state of the given key.
   keyPressed[key] = action;
 
@@ -74,6 +71,9 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
     case GLFW_KEY_N:
       areNormalsEnabled = !areNormalsEnabled;
       env["areNormalsEnabled"] = areNormalsEnabled;
+      break;
+    case GLFW_KEY_Z:
+      shineValue = -shineValue;
       break;
   }
 }
@@ -162,9 +162,6 @@ GLvoid updateCamera()
   if (keyPressed[GLFW_KEY_K]) {
     lightPosition.y -= 1.0f;
   }
-
-  // printf("x= %.2f y= %.2f z= %.2f\n",
-  //        lightPosition.x, lightPosition.y, lightPosition.z);
 }
 
 /**
@@ -194,10 +191,10 @@ GLvoid drawFractal()
   matShineLoc    = glGetUniformLocation(fractalShader, "material.shininess"); 
 
   // glUniform3f(matAmbientLoc,  0.2f, 0.4f, 0.31f);
-  glUniform3f(matAmbientLoc,  0.1f, 0.1f, 0.1f);
-  glUniform3f(matDiffuseLoc,  0.63f, 0.63f, 0.63f);
-  glUniform3f(matSpecularLoc, 0.42f, 0.42f, 0.42f);
-  glUniform1f(matShineLoc,    0.5f);
+  glUniform3f(matAmbientLoc,  0.0f, 0.0f, 0.0f);
+  glUniform3f(matDiffuseLoc,  0.5f, 0.5f, 0.5f);
+  glUniform3f(matSpecularLoc, 0.5f, 0.5f, 0.5f);
+  glUniform1f(matShineLoc,    shineValue);
 
   // Light uniforms
   lightAmbientLoc  = glGetUniformLocation(fractalShader, "light.ambient");
