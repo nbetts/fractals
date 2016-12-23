@@ -6,7 +6,7 @@ isFullScreenEnabled         0      # initial toggle of fullscreen window
 
 
 # Environment properties
-isLightingEnabled           0      # initial toggle of global lighting
+isPointLightingEnabled      0      # initial toggle of point/direction lighting
 
 backgroundColourRed         0.41   # brightness of red colour (0 - 1.0)
 backgroundColourGreen       0.85   # brightness of green colour (0 - 1.0)

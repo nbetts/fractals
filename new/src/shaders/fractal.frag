@@ -8,7 +8,7 @@ struct Material {
 };
 
 struct Light {
-    vec3 position;
+    vec4 position;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -22,15 +22,21 @@ out vec4 color;
 
 uniform Material material;
 uniform Light light;
-uniform vec3 viewPosition;
-uniform vec3 lightPosition;
+uniform vec4 viewPosition;
 
 void main()
 {
   vec3 normal = normalize(outNormal);
+  vec4 position = vec4(outPosition, 1.0f);
+  vec3 lightDirection;
 
-  vec3 lightDirection = normalize(lightPosition - outPosition);
-  vec3 viewDirection = normalize(viewPosition - outPosition);
+  if (light.position.w == 0.0f) {
+    lightDirection = vec3(normalize(light.position));
+  } else {
+    lightDirection = vec3(normalize(light.position - position));
+  }
+  
+  vec3 viewDirection = vec3(normalize(viewPosition - position));
   vec3 halfwayDirection = normalize(lightDirection + viewDirection);
   
   float diffuseStrength = max(dot(normal, lightDirection), 0.0f);

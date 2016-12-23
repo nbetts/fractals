@@ -38,7 +38,8 @@ Camera camera(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f),
 Fractal fractal(0, 0.0f, 0.0f, glm::vec3(0.0f));
 GLfloat backgroundColour[3];
 
-GLuint areNormalsEnabled = false;
+GLuint areNormalsEnabled;
+GLuint isPointLightingEnabled;
 GLfloat shineValue = 1.0f;
 
 /**
@@ -78,6 +79,10 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
     case GLFW_KEY_N:
       areNormalsEnabled = !areNormalsEnabled;
       env["areNormalsEnabled"] = areNormalsEnabled;
+      break;
+    case GLFW_KEY_P:
+      isPointLightingEnabled = !isPointLightingEnabled;
+      env["isPointLightingEnabled"] = isPointLightingEnabled;
       break;
     case GLFW_KEY_Z:
       shineValue = -shineValue;
@@ -132,6 +137,7 @@ GLvoid updateTime()
 GLvoid initialiseEnvironment()
 {
   env = readProfile(profile);
+  isPointLightingEnabled = env["isPointLightingEnabled"];
 
   initialiseCamera();
   initialiseFractal();
@@ -254,10 +260,10 @@ GLvoid drawFractal()
 
   mat4 model, view, projection;
 
-  GLuint modelLoc, viewLoc, projectionLoc;
-  GLuint viewPosLoc, lightPosLoc;
-  GLuint lightAmbientLoc, lightDiffuseLoc, lightSpecularLoc;
   GLuint matAmbientLoc, matDiffuseLoc, matSpecularLoc, matShineLoc;
+  GLuint lightPositionLoc, lightAmbientLoc, lightDiffuseLoc, lightSpecularLoc;
+  GLuint viewPosLoc;
+  GLuint modelLoc, viewLoc, projectionLoc;
 
   GLfloat scaleFactor = 100.0f;
   GLfloat yOffset = fractal.getYPosition(fractal.size / 2, fractal.size / 2) +
@@ -275,25 +281,25 @@ GLvoid drawFractal()
   glUniform3f(matAmbientLoc,  0.0f, 0.0f, 0.0f);
   glUniform3f(matDiffuseLoc,  0.5f, 0.5f, 0.5f);
   glUniform3f(matSpecularLoc, 0.5f, 0.5f, 0.5f);
-  glUniform1f(matShineLoc,    shineValue);
+  glUniform1f(matShineLoc, shineValue);
 
   // Light uniforms
+  lightPositionLoc = glGetUniformLocation(fractalShader, "light.position");
   lightAmbientLoc  = glGetUniformLocation(fractalShader, "light.ambient");
   lightDiffuseLoc  = glGetUniformLocation(fractalShader, "light.diffuse");
   lightSpecularLoc = glGetUniformLocation(fractalShader, "light.specular");
 
+  // glUniform3f(lightDirectionLoc, -0.2f, -1.0f, -0.3f);
+  glUniform4f(lightPositionLoc, lightPosition.x,
+              lightPosition.y, lightPosition.z, isPointLightingEnabled);
   glUniform3f(lightAmbientLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightDiffuseLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
 
-  // Position uniforms
+  // View position uniform
   viewPosLoc  = glGetUniformLocation(fractalShader, "viewPosition");
-  lightPosLoc = glGetUniformLocation(fractalShader, "lightPosition");
-
-  glUniform3f(viewPosLoc, camera.position.x,
-              camera.position.y, camera.position.z);
-  glUniform3f(lightPosLoc, lightPosition.x, lightPosition.y, lightPosition.z);
-
+  glUniform4f(viewPosLoc, camera.position.x,
+              camera.position.y, camera.position.z, 1.0f);
   
   // Transform the shader program's vertices with the model, view and
   // projection matrices.
