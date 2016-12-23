@@ -29,18 +29,22 @@ GLfloat currentTime = 0.0f;
 GLfloat lastTime = 0.0f;
 GLfloat deltaTime = 0.0f;
 
+// camera info
+Camera camera(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f),
+              0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
 // lighting info
 glm::vec3 lightPosition(0.0f, 100.0f, 0.0f);
 
-// object info
-Camera camera(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f),
-              0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+// fractal info
 Fractal fractal(0, 0.0f, 0.0f, glm::vec3(0.0f));
-GLfloat backgroundColour[3];
-
 GLuint areNormalsEnabled;
 GLuint isPointLightingEnabled;
+GLuint isCullingEnabled;
 GLfloat shineValue = 1.0f;
+
+// misc. info
+GLfloat backgroundColour[3];
 
 /**
  * Listen for keyboard events.
@@ -75,6 +79,10 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       }
       env["isFacesEnabled"] = !env["isFacesEnabled"];
+      break;
+    case GLFW_KEY_C:
+      isCullingEnabled = !isCullingEnabled;
+      env["isCullingEnabled"] = isCullingEnabled;
       break;
     case GLFW_KEY_N:
       areNormalsEnabled = !areNormalsEnabled;
@@ -218,6 +226,7 @@ GLvoid initialiseFractal()
                               env["fractalColourGreen"],
                               env["fractalColourBlue"]));
   areNormalsEnabled = env["areNormalsEnabled"];
+  isCullingEnabled = env["isCullingEnabled"];
 }
 
 /**
@@ -300,7 +309,7 @@ GLvoid drawFractal()
 
   // View position uniform
   viewPosLoc  = glGetUniformLocation(fractalShader, "viewPosition");
-  
+
   glUniform4f(viewPosLoc, camera.position.x,
               camera.position.y, camera.position.z, 1.0f);
   
@@ -319,7 +328,13 @@ GLvoid drawFractal()
   model = translate(model, vec3(-0.5f, -yOffset, -0.5f));
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
 
+  if (isCullingEnabled) {
+    glEnable(GL_CULL_FACE);
+  }
   glDrawElements(GL_TRIANGLES, fractal.indexCount, GL_UNSIGNED_INT, 0);
+  if (isCullingEnabled) {
+    glDisable(GL_CULL_FACE);
+  }
   glBindVertexArray(0);
 
   // temp normals
@@ -336,9 +351,13 @@ GLvoid drawFractal()
     glBindVertexArray(vao[Shader::NORMAL]);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
 
-    glDisable(GL_CULL_FACE);
+    if (isCullingEnabled) {
+      glDisable(GL_CULL_FACE);
+    }
     glDrawArrays(GL_LINES, 0, fractal.vertexCount * 2);
-    glEnable(GL_CULL_FACE);
+    if (isCullingEnabled) {
+      glEnable(GL_CULL_FACE);
+    }
     glBindVertexArray(0);
   }
 }
@@ -489,8 +508,7 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
     height = videoMode->height;
     monitor = glfwGetPrimaryMonitor();
   }
-  window = glfwCreateWindow(width, height, "Diamond-square Fractal",
-                            monitor, nullptr);
+  window = glfwCreateWindow(width, height, "Fractals", monitor, nullptr);
 
   glfwMakeContextCurrent(window);
 
@@ -510,8 +528,8 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
 
   // Set extra options.
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
   glShadeModel(GL_FLAT);
+
   if (!env["isFacesEnabled"]) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   }

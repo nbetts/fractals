@@ -19,6 +19,7 @@ backgroundColourBlue        0.99   # brightness of blue colour (0 - 1.0)
 # Fractal properties
 isFacesEnabled              1      # initial toggle of fractal facets
 areNormalsEnabled           0      # initial toggle of vertex normals
+isCullingEnabled            0      # initial toggle of vertex culling
 
 fractalDepth                10     # iterations in the fractal generation
 fractalYRange               0.22   # initial Y range of the fractal
