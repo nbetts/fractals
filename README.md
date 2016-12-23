@@ -15,6 +15,7 @@ Move the mouse to turn the camera and zoom with the mouse scroll.
 | Key   | Action                |
 |-------|-----------------------|
 | ESC   | exit the program      |
+| 1     | reinitialise profile  |
 | SPACE | regenerate fractal    |
 | W     | move camera forward   |
 | S     | move camera backward  |

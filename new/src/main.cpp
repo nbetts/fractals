@@ -13,6 +13,7 @@ GLfloat aspectRatio;
 GLuint vao[2], vbo[2], ebo[2], fractalShader, normalShader;
 
 // environment info
+const GLchar* profile;
 std::map<std::string, GLfloat> env;
 
 // keyboard info
@@ -56,6 +57,11 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
   switch(key) {
     case GLFW_KEY_ESCAPE:
       glfwSetWindowShouldClose(window, GL_TRUE);
+      break;
+    case GLFW_KEY_1:
+      initialiseEnvironment();
+      generateFractal();
+      updateFractalBuffer();
       break;
     case GLFW_KEY_SPACE:
       generateFractal();
@@ -121,6 +127,31 @@ GLvoid updateTime()
 }
 
 /**
+ * Initialise the environment properties, camera and fractal.
+ */
+GLvoid initialiseEnvironment()
+{
+  env = readProfile(profile);
+
+  initialiseCamera();
+  initialiseFractal();
+}
+
+/**
+ * Initialise the camera attributes.
+ */
+GLvoid initialiseCamera()
+{
+  camera = Camera(glm::vec3(0.5f, 0.0f, 5.0f),
+                  glm::vec3(0.0f, 0.0f, -1.0f),
+                  glm::vec3(0.0f, 1.0f, 0.0f),
+                  -90.0f, 0.0f,
+                  env["cameraMovementSpeed"],
+                  env["cameraTurnSensitivity"],
+                  env["cameraFov"]);
+}
+
+/**
  * Update any camera atrributes before rendering the scene.
  */
 GLvoid updateCamera()
@@ -163,6 +194,20 @@ GLvoid updateCamera()
   if (keyPressed[GLFW_KEY_K]) {
     lightPosition.y -= 1.0f;
   }
+}
+
+/**
+ * Initialise the fractal attributes.
+ */
+GLvoid initialiseFractal()
+{
+  fractal = Fractal(env["fractalDepth"],
+                    env["fractalYRange"],
+                    env["fractalYDeviance"],
+                    glm::vec3(env["fractalColourRed"],
+                              env["fractalColourGreen"],
+                              env["fractalColourBlue"]));
+  areNormalsEnabled = env["areNormalsEnabled"];
 }
 
 /**
@@ -216,7 +261,7 @@ GLvoid drawFractal()
 
   GLfloat scaleFactor = 100.0f;
   GLfloat yOffset = fractal.getYPosition(fractal.size / 2, fractal.size / 2) +
-                                         (1.5f / scaleFactor);
+                                         (2.0f / scaleFactor);
 
   glUseProgram(fractalShader);
 
@@ -494,25 +539,10 @@ GLint main(GLint argc, GLchar* argv[])
   srand(time(nullptr));
 
   // Read in the profile.
-  const GLchar* profile = (argc >= 2) ? argv[1] : "profile.txt";
-  env = readProfile(profile);
+  profile = (argc >= 2) ? argv[1] : "profile.txt";
 
-  // Instantiate the camera and the fractal.
-  camera = Camera(glm::vec3(0.5f, 0.0f, 5.0f),
-                  glm::vec3(0.0f, 0.0f, -1.0f),
-                  glm::vec3(0.0f, 1.0f, 0.0f),
-                  -90.0f, 0.0f,
-                  env["cameraMovementSpeed"],
-                  env["cameraTurnSensitivity"],
-                  env["cameraFov"]);
-
-  fractal = Fractal(env["fractalDepth"],
-                    env["fractalYRange"],
-                    env["fractalYDeviance"],
-                    glm::vec3(env["fractalColourRed"],
-                              env["fractalColourGreen"],
-                              env["fractalColourBlue"]));
-  areNormalsEnabled = env["areNormalsEnabled"];
+  // Initialise the envorinment properties.
+  initialiseEnvironment();
 
   // Initialise the graphics environment.
   initialiseGraphics(argc, argv);

@@ -27,7 +27,10 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
                 GLint action, GLint mode);
 GLvoid mouse(GLFWwindow* window, GLdouble x, GLdouble y);
 GLvoid updateTime();
+GLvoid initialiseEnvironment();
+GLvoid initialiseCamera();
 GLvoid updateCamera();
+GLvoid initialiseFractal();
 GLvoid generateFractal();
 GLvoid drawFractal();
 GLvoid runMainLoop();
