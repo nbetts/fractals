@@ -67,6 +67,7 @@ class Fractal
     GLvoid smoothColours(std::vector<std::vector<GLfloat>> kernel);
     std::vector<std::vector<GLfloat>> createGaussianKernel(GLuint size,
                                                            GLfloat sigma);
+    std::vector<std::vector<GLfloat>> createBoxKernel(GLuint size);
 };
 
 #endif

@@ -104,6 +104,8 @@ GLvoid Fractal::generate()
   smoothPositions(createGaussianKernel(3, 5.0f));
 
   updateNormals();
+  smoothNormals(createBoxKernel(3));
+
   updateColours(0.015f);
 
   generateVertexData();
@@ -277,7 +279,31 @@ GLvoid Fractal::smoothPositions(std::vector<std::vector<GLfloat>> kernel)
  */
 GLvoid Fractal::smoothNormals(std::vector<std::vector<GLfloat>> kernel)
 {
-  // TODO
+  GLuint kernelSize = kernel.size();
+  glm::vec3 accumulator;
+  std::vector<std::vector<glm::vec3>> newNormals(size,
+                          std::vector<glm::vec3>(size));
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      accumulator = glm::vec3(0.0f);
+
+      for (GLuint k = 0; k < kernelSize; k++) {
+        for (GLuint l = 0; l < kernelSize; l++) {
+          accumulator += normals[(i + (k - (kernelSize / 2))) % size]
+                                [(j + (l - (kernelSize / 2))) % size] *
+                         kernel[k][l];
+        }
+      }
+      newNormals[i][j] = accumulator;
+    }
+  }
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      normals[i][j] = newNormals[i][j];
+    }
+  }
 }
 
 /**
@@ -302,18 +328,36 @@ std::vector<std::vector<GLfloat>> Fractal::createGaussianKernel(GLuint size,
 
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
-      GLfloat val = exp(-0.5f * (pow(((GLfloat)i - halfSize) / sigma, 2.0f) +
-                                 pow(((GLfloat)j - halfSize) / sigma, 2.0f))) /
-                    denominator;
+      GLfloat weight = exp(-0.5f *
+                       (pow(((GLfloat)i - halfSize) / sigma, 2.0f) +
+                        pow(((GLfloat)j - halfSize) / sigma, 2.0f))) /
+                       denominator;
 
-      accumulator += val;
-      kernel[i][j] = val;
+      accumulator += weight;
+      kernel[i][j] = weight;
     }
   }
 
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
       kernel[i][j] /= accumulator;
+    }
+  }
+
+  return kernel;
+}
+
+/**
+ * Create a Box filter kernel of a given size.
+ */
+std::vector<std::vector<GLfloat>> Fractal::createBoxKernel(GLuint size)
+{
+  std::vector<std::vector<GLfloat>> kernel(size, std::vector<GLfloat>(size));
+  GLfloat weight = 1.0f / (GLfloat)(size * size);
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      kernel[i][j] = weight;
     }
   }
 
