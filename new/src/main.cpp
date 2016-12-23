@@ -45,6 +45,10 @@ GLuint areNormalsEnabled = false;
 GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
                 GLint action, GLint mode)
 {
+  if (key > 256) {
+    return;
+  }
+
   // Store the action state of the given key.
   keyPressed[key] = action;
 
