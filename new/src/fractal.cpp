@@ -107,6 +107,7 @@ GLvoid Fractal::generate()
   smoothNormals(createBoxKernel(3));
 
   updateColours(0.015f);
+  smoothColours(createGaussianKernel(2, 2.0f));
 
   generateVertexData();
   generateNormalVertexData();
@@ -311,7 +312,31 @@ GLvoid Fractal::smoothNormals(std::vector<std::vector<GLfloat>> kernel)
  */
 GLvoid Fractal::smoothColours(std::vector<std::vector<GLfloat>> kernel)
 {
-  // TODO
+  GLuint kernelSize = kernel.size();
+  glm::vec3 accumulator;
+  std::vector<std::vector<glm::vec3>> newColours(size,
+                          std::vector<glm::vec3>(size));
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      accumulator = glm::vec3(0.0f);
+
+      for (GLuint k = 0; k < kernelSize; k++) {
+        for (GLuint l = 0; l < kernelSize; l++) {
+          accumulator += colours[(i + (k - (kernelSize / 2))) % size]
+                                [(j + (l - (kernelSize / 2))) % size] *
+                         kernel[k][l];
+        }
+      }
+      newColours[i][j] = accumulator;
+    }
+  }
+
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      colours[i][j] = newColours[i][j];
+    }
+  }
 }
 
 /**
