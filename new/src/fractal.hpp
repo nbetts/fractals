@@ -59,6 +59,7 @@ class Fractal
     GLvoid generateIndexData();
     GLvoid generateVertexData();
     GLvoid generateNormalVertexData();
+    GLvoid updateVertexData();
     GLvoid updatePositions();
     GLvoid updateNormals();
     GLvoid updateColours();

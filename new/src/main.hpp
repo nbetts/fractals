@@ -28,7 +28,8 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
 GLvoid mouse(GLFWwindow* window, GLdouble x, GLdouble y);
 GLvoid updateTime();
 GLvoid updateCamera();
-GLvoid drawGround();
+GLvoid generateFractal();
+GLvoid drawFractal();
 GLvoid runMainLoop();
 GLvoid initialiseBuffersAndShaders();
 GLvoid updateFractalBuffer();

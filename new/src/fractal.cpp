@@ -101,18 +101,9 @@ GLvoid Fractal::generate()
   }
 
   updatePositions();
-  smoothPositions(createGaussianKernel(3, 5.0f));
-
   updateNormals();
-  smoothNormals(createBoxKernel(3));
-
   updateColours();
-  smoothColours(createGaussianKernel(2, 2.0f));
-  addColourNoise(0.014f);
-
-  generateVertexData();
-  generateNormalVertexData();
-  generateIndexData();
+  updateVertexData();
 }
 
 /**
@@ -168,7 +159,7 @@ GLvoid Fractal::updateColours()
 }
 
 /**
- * Generate the vertex data.
+ * Generate the vertex positional data.
  */
 GLvoid Fractal::generateVertexData()
 {
@@ -192,7 +183,7 @@ GLvoid Fractal::generateVertexData()
 }
 
 /**
- * Generate the normal vertex data.
+ * Generate the vertex normal data.
  */
 GLvoid Fractal::generateNormalVertexData()
 {
@@ -216,7 +207,7 @@ GLvoid Fractal::generateNormalVertexData()
 }
 
 /**
- * Generate the index data.
+ * Generate the vertex index data.
  */
 GLvoid Fractal::generateIndexData()
 {
@@ -240,6 +231,16 @@ GLvoid Fractal::generateIndexData()
       increment++;
     }
   }
+}
+
+/**
+ * Generate all the vertex data.
+ */
+GLvoid Fractal::updateVertexData()
+{
+  generateVertexData();
+  generateNormalVertexData();
+  generateIndexData();
 }
 
 /**
@@ -271,6 +272,9 @@ GLvoid Fractal::smoothPositions(std::vector<std::vector<GLfloat>> kernel)
       setYPosition(i, j, newYValues[i][j]);
     }
   }
+
+  // Ensure the vertex normals reflect the new positions.
+  updateNormals();
 }
 
 /**

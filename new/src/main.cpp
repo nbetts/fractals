@@ -165,6 +165,21 @@ GLvoid updateCamera()
 }
 
 /**
+ * Generate the fractal.
+ */
+GLvoid generateFractal()
+{
+  fractal.generate();
+
+  fractal.smoothPositions(fractal.createGaussianKernel(3, 5.0f));
+  fractal.smoothNormals(fractal.createBoxKernel(3));
+  fractal.smoothColours(fractal.createGaussianKernel(2, 2.0f));
+  fractal.addColourNoise(0.014f);
+
+  fractal.updateVertexData();
+}
+
+/**
  * Draw the fractal.
  */
 GLvoid drawFractal()
@@ -309,11 +324,6 @@ GLvoid initialiseBuffersAndShaders()
  */
 GLvoid updateFractalBuffer()
 {
-  fractal.generate();
-
-  // GLfloat** kernel = {0};
-  // fractal.convolve(0, kernel);
-
   GLfloat vertexBufferSize = fractal.vertexCount * fractal.DIMENSIONS *
                              fractal.attributeCount * sizeof(GLfloat);
   GLfloat indexBufferSize = fractal.indexCount * sizeof(GLuint);
@@ -489,6 +499,8 @@ GLint main(GLint argc, GLchar* argv[])
   // Initialise the buffers and shaders.
   initialiseBuffersAndShaders();
 
+  // Generate the fractal.
+  generateFractal();
 
   // Push the vertex data into the buffers.
   updateFractalBuffer();
