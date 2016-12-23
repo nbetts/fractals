@@ -281,7 +281,6 @@ GLvoid drawFractal()
   matSpecularLoc = glGetUniformLocation(fractalShader, "material.specular");
   matShineLoc    = glGetUniformLocation(fractalShader, "material.shininess"); 
 
-  // glUniform3f(matAmbientLoc,  0.2f, 0.4f, 0.31f);
   glUniform3f(matAmbientLoc,  0.0f, 0.0f, 0.0f);
   glUniform3f(matDiffuseLoc,  0.5f, 0.5f, 0.5f);
   glUniform3f(matSpecularLoc, 0.5f, 0.5f, 0.5f);
@@ -301,6 +300,7 @@ GLvoid drawFractal()
 
   // View position uniform
   viewPosLoc  = glGetUniformLocation(fractalShader, "viewPosition");
+  
   glUniform4f(viewPosLoc, camera.position.x,
               camera.position.y, camera.position.z, 1.0f);
   

@@ -13,6 +13,7 @@ A list of upcoming features I'd like to accomplish.
 - shadows
 - point/directional lighting toggle
 - light mapping once ground textures are implemented
+- move light ambient/diffuse/specular attributes to profile.txt
 
 
 # Fractal properties
@@ -20,3 +21,4 @@ A list of upcoming features I'd like to accomplish.
 - adjustable yRange and yDeviance in real time
 - custom colour height maps for realistic looking terrain
 - ground textures
+- move material ambient/diffuse/specular attributes to profile.txt
