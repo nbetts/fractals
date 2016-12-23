@@ -106,8 +106,9 @@ GLvoid Fractal::generate()
   updateNormals();
   smoothNormals(createBoxKernel(3));
 
-  updateColours(0.015f);
+  updateColours();
   smoothColours(createGaussianKernel(2, 2.0f));
+  addColourNoise(0.014f);
 
   generateVertexData();
   generateNormalVertexData();
@@ -153,18 +154,15 @@ GLvoid Fractal::updateNormals()
 }
 
 /**
- * Update the colour of each vertex. Noise (greyscale) can be added to vary the
- * vertex colours.
+ * Update the colour of each vertex.
  */
-GLvoid Fractal::updateColours(GLfloat noise)
+GLvoid Fractal::updateColours()
 {
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
-      GLfloat randomNoise = randomNumber(-noise, noise);
-
-      colours[i][j].x = baseColour.x + randomNoise;
-      colours[i][j].y = baseColour.y + randomNoise;
-      colours[i][j].z = baseColour.z + randomNoise;
+      colours[i][j].x = baseColour.x;
+      colours[i][j].y = baseColour.y;
+      colours[i][j].z = baseColour.z;
     }
   }
 }
@@ -387,4 +385,20 @@ std::vector<std::vector<GLfloat>> Fractal::createBoxKernel(GLuint size)
   }
 
   return kernel;
+}
+
+/**
+ * Add a specified amount of (greyscale) noise to vary the vertex colours.
+ */
+GLvoid Fractal::addColourNoise(GLfloat noiseLevel)
+{
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      GLfloat randomNoise = randomNumber(-noiseLevel, noiseLevel);
+
+      colours[i][j].x += randomNoise;
+      colours[i][j].y += randomNoise;
+      colours[i][j].z += randomNoise;
+    }
+  }
 }

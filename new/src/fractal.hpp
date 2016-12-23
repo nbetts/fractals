@@ -61,13 +61,14 @@ class Fractal
     GLvoid generateNormalVertexData();
     GLvoid updatePositions();
     GLvoid updateNormals();
-    GLvoid updateColours(GLfloat noise);
+    GLvoid updateColours();
     GLvoid smoothPositions(std::vector<std::vector<GLfloat>> kernel);
     GLvoid smoothNormals(std::vector<std::vector<GLfloat>> kernel);
     GLvoid smoothColours(std::vector<std::vector<GLfloat>> kernel);
     std::vector<std::vector<GLfloat>> createGaussianKernel(GLuint size,
                                                            GLfloat sigma);
     std::vector<std::vector<GLfloat>> createBoxKernel(GLuint size);
+    GLvoid addColourNoise(GLfloat noiseLevel);
 };
 
 #endif
