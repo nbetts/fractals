@@ -53,6 +53,7 @@ These following settings allow you to adjust various parameters before running t
 | _Fractal properties_        |             |                                             |
 | isFacesEnabled              | 0,1         | Initial toggle of fractal facets            |
 | areNormalsEnabled           | 0,1         | Initial toggle of vertex normals            |
+| isCullingEnabled            | 0,1         | Initial toggle of vertex culling            |
 | fractalDepth                | 1-∞         | Iterations in the fractal generation        |
 | fractalYRange               | 0.0-∞       | Initial Y range of the fractal              |
 | fractalYDeviance            | 0.0-∞       | Initial Y deviance of the fractal           |
