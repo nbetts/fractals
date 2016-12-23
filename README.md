@@ -2,7 +2,11 @@
 
 The aim of this program is to illustrate different types of fractals and allow you to customise various parameters to better understand how they work. They are all based on procedural modelling.
 
+For a list of planned features, see `todo.txt`.
+
 ## Existing Fractals
+
+For a list of planned fractals, see `fractals.txt`.
 
 * Diamond-square algorithm:
 
@@ -34,28 +38,41 @@ Move the mouse to turn the camera and zoom with the mouse scroll.
 ## Profile Settings
 These following settings allow you to adjust various parameters before running the simulation and can be found in `profile.txt`.
 
-| Name                    | Value Range | Description                         |
-|-------------------------|-------------|-------------------------------------|
-|_System properties_      |                                                  ||
-|isFullScreenEnabled      | 0-1       | Initial toggle of fullscreen window   |
-|_Environment properties_ |                                                  ||
-|isLightingEnabled        | 0-1       | Initial toggle of global lighting     |
-|backgroundColourRed      | 0.0-1.0   | Brightness of sky red colour          |
-|backgroundColourGreen    | 0.0-1.0   | Brightness of sky green colour        |
-|backgroundColourBlue     | 0.0-1.0   | Brightness of sky blue colour         |
-|_Fractal properties_     |                                                  ||
-|isFacesEnabled           | 0-1       | Initial toggle of fractal facets      |
-|areNormalsEnabled        | 0-1       | Initial toggle of vertex normals      |
-|fractalDepth             | 1-∞       | Iterations in the fractal generation  |
-|fractalYRange            | 0.0-∞     | Initial Y range of the fractal        |
-|fractalYDeviance         | 0.0-∞     | Initial Y deviance of the fractal     |
-|fractalColourRed         | 0.0-1.0   | Brightness of fractal red colour      |
-|fractalColourGreen       | 0.0-1.0   | Brightness of fractal green colour    |
-|fractalColourBlue        | 0.0-1.0   | Brightness of fractal blue colour     |
-|_Camera properties_      |                                                  ||
-|cameraMovementSpeed      | 0.0-∞     | Movement speed of free mode camera    |
-|cameraTurnSensitivity    | 0.0-∞     | Mouse movement/scroll sensitivity     |
-|cameraFov                | 1.0-180.0 | Field of view (in degress)            |
+| Name                        | Value Range | Description                                 |
+|-----------------------------|-------------|---------------------------------------------|
+| _System properties_         |             |                                             |
+| isFullScreenEnabled         | 0,1         | Initial toggle of fullscreen window         |
+| _Environment properties_    |             |                                             |
+| isPointLightingEnabled      | 0,1         | initial toggle of point/direction lighting  |
+| lightPositionX              | -∞-∞        | x position of light source                  |
+| lightPositionY              | -∞-∞        | y position of light source                  |
+| lightPositionZ              | -∞-∞        | z position of light source                  |
+| backgroundColourRed         | 0.0-1.0     | Brightness of sky red colour                |
+| backgroundColourGreen       | 0.0-1.0     | Brightness of sky green colour              |
+| backgroundColourBlue        | 0.0-1.0     | Brightness of sky blue colour               |
+| _Fractal properties_        |             |                                             |
+| isFacesEnabled              | 0,1         | Initial toggle of fractal facets            |
+| areNormalsEnabled           | 0,1         | Initial toggle of vertex normals            |
+| fractalDepth                | 1-∞         | Iterations in the fractal generation        |
+| fractalYRange               | 0.0-∞       | Initial Y range of the fractal              |
+| fractalYDeviance            | 0.0-∞       | Initial Y deviance of the fractal           |
+| fractalColourRed            | 0.0-1.0     | Brightness of fractal red colour            |
+| fractalColourGreen          | 0.0-1.0     | Brightness of fractal green colour          |
+| fractalColourBlue           | 0.0-1.0     | Brightness of fractal blue colour           |
+| isSmoothingPositionsEnabled | 0,1         | Initial toggle of vertex position smoothing |
+| isSmoothingNormalsEnabled   | 0,1         | Initial toggle of vertex normal smoothing   |
+| isSmoothingColoursEnabled   | 0,1         | Initial toggle of vertex colour smoothing   |
+| isColourNoiseEnabled        | 0,1         | Initial toggle of vertex colour noise       |
+| smoothPositionsKernelSize   | 1-∞         | Size of position smoothing kernel           |
+| smoothPositionsSigmaValue   | 0.0-∞       | Sigma value of position smoothing kernel    |
+| smoothNormalsKernelSize     | 1-∞         | Size of normal smoothing kernel             |
+| smoothColoursKernelSize     | 1-∞         | Size of colour smoothing kernel             |
+| smoothColoursSigmaValue     | 0.0-∞       | Sigma value of colour smoothing kernel      |
+| colourNoiseLevel            | 0.0-1.0     | Noise level of colour noise                 |
+| _Camera properties_         |             |                                             |
+| cameraMovementSpeed         | 0.0-∞       | Movement speed of free mode camera          |
+| cameraTurnSensitivity       | 0.0-∞       | Mouse movement/scroll sensitivity           |
+| cameraFov                   | 1.0-180.0   | Field of view (in degress)                  |
 
 ## Requirements
 
