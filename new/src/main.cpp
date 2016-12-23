@@ -178,8 +178,8 @@ GLvoid drawFractal()
   GLuint matAmbientLoc, matDiffuseLoc, matSpecularLoc, matShineLoc;
 
   GLfloat scaleFactor = 100.0f;
-  GLfloat yOffset = fractal.getY(fractal.size / 2, fractal.size / 2) +
-                          (1.5f / scaleFactor);
+  GLfloat yOffset = fractal.getYPosition(fractal.size / 2, fractal.size / 2) +
+                                         (1.5f / scaleFactor);
 
   glUseProgram(fractalShader);
 

@@ -37,7 +37,7 @@ Fractal::Fractal(GLuint desiredDepth, GLfloat desiredYRange,
 /**
  * Set the Y value at a given vertex in the 
  */
-GLvoid Fractal::setY(GLuint x, GLuint z, GLfloat value)
+GLvoid Fractal::setYPosition(GLuint x, GLuint z, GLfloat value)
 {
   positions[x % size][z % size].y = value;
 }
@@ -45,7 +45,7 @@ GLvoid Fractal::setY(GLuint x, GLuint z, GLfloat value)
 /**
  * Get the Y value at a given vertex in the 
  */
-GLfloat Fractal::getY(GLuint x, GLuint z)
+GLfloat Fractal::getYPosition(GLuint x, GLuint z)
 {
   return positions[x % size][z % size].y;
 }
@@ -66,11 +66,11 @@ GLvoid Fractal::generate()
     for (GLuint y = halfStep; y < size + halfStep; y += tempSize) {
       for (GLuint x = halfStep; x < size + halfStep; x += tempSize) {
         GLuint hs = tempSize / 2;
-        GLfloat a = getY(x - hs, y - hs);
-        GLfloat b = getY(x + hs, y - hs);
-        GLfloat c = getY(x - hs, y + hs);
-        GLfloat d = getY(x + hs, y + hs);
-        setY(x, y, average({a, b, c, d}) +
+        GLfloat a = getYPosition(x - hs, y - hs);
+        GLfloat b = getYPosition(x + hs, y - hs);
+        GLfloat c = getYPosition(x - hs, y + hs);
+        GLfloat d = getYPosition(x + hs, y + hs);
+        setYPosition(x, y, average({a, b, c, d}) +
              randomNumber(-tempYRange, tempYRange));
       }
     }
@@ -79,19 +79,19 @@ GLvoid Fractal::generate()
       for (GLuint x = 0; x < size; x += tempSize) {
         GLuint hs = tempSize / 2;
         GLfloat newX = x + halfStep;
-        GLfloat a = getY(newX - hs, y);
-        GLfloat b = getY(newX + hs, y);
-        GLfloat c = getY(newX, y - hs);
-        GLfloat d = getY(newX, y + hs);
-        setY(newX, y, average({a, b, c, d}) +
+        GLfloat a = getYPosition(newX - hs, y);
+        GLfloat b = getYPosition(newX + hs, y);
+        GLfloat c = getYPosition(newX, y - hs);
+        GLfloat d = getYPosition(newX, y + hs);
+        setYPosition(newX, y, average({a, b, c, d}) +
              randomNumber(-tempYRange, tempYRange));
    
         GLfloat newY = y + halfStep;
-        a = getY(x - hs, newY);
-        b = getY(x + hs, newY);
-        c = getY(x, newY - hs);
-        d = getY(x, newY + hs);
-        setY(x, newY, average({a, b, c, d}) +
+        a = getYPosition(x - hs, newY);
+        b = getYPosition(x + hs, newY);
+        c = getYPosition(x, newY - hs);
+        d = getYPosition(x, newY + hs);
+        setYPosition(x, newY, average({a, b, c, d}) +
              randomNumber(-tempYRange, tempYRange));
       }
     }
@@ -258,7 +258,7 @@ GLvoid Fractal::smoothPositions(std::vector<std::vector<GLfloat>> kernel)
 
       for (GLuint k = 0; k < kernelSize; k++) {
         for (GLuint l = 0; l < kernelSize; l++) {
-          accumulator += getY(i + (k - (kernelSize / 2)),
+          accumulator += getYPosition(i + (k - (kernelSize / 2)),
                               j + (l - (kernelSize / 2))) *
                          kernel[k][l];
         }
@@ -269,7 +269,7 @@ GLvoid Fractal::smoothPositions(std::vector<std::vector<GLfloat>> kernel)
 
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
-      setY(i, j, newYValues[i][j]);
+      setYPosition(i, j, newYValues[i][j]);
     }
   }
 }

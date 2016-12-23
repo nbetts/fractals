@@ -53,8 +53,8 @@ class Fractal
 
     Fractal(GLuint desiredDepth, GLfloat desiredYRange,
             GLfloat desiredYDeviance, glm::vec3 desiredBaseColour);
-    GLvoid  setY(GLuint x, GLuint z, GLfloat value);
-    GLfloat getY(GLuint x, GLuint z);
+    GLvoid  setYPosition(GLuint x, GLuint z, GLfloat value);
+    GLfloat getYPosition(GLuint x, GLuint z);
     GLvoid generate();
     GLvoid generateIndexData();
     GLvoid generateVertexData();
