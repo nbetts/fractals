@@ -1,0 +1,22 @@
+A list of upcoming features I'd like to accomplish.
+
+
+# System properties
+- refactor fractal class into specific fractal types
+- add more types of fractals
+- build a system for switching between types of fractals
+- GUI-like parameter customisation
+- GUI text for presenting fractal information/debugging
+
+
+# Environment properties
+- shadows
+- point/directional lighting toggle
+- light mapping once ground textures are implemented
+
+
+# Fractal properties
+- add Perlin noise (or Mersenne twister) for pseudo-random fractal generation
+- adjustable yRange and yDeviance in real time
+- custom colour height maps for realistic looking terrain
+- ground textures
