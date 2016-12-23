@@ -6,9 +6,9 @@ isFullScreenEnabled        0        # initial toggle of fullscreen window
 
 # Environment properties
 isLightingEnabled          0        # initial toggle of global lighting 
-backgroundColourRed        0        # brightness of red colour (0 - 1.0)
-backgroundColourGreen      0.0      # brightness of green colour (0 - 1.0)
-backgroundColourBlue       0.0      # brightness of blue colour (0 - 1.0)
+backgroundColourRed        0.41     # brightness of red colour (0 - 1.0)
+backgroundColourGreen      0.85     # brightness of green colour (0 - 1.0)
+backgroundColourBlue       0.99     # brightness of blue colour (0 - 1.0)
 
 # Fractal properties
 isFacesEnabled             1        # initial toggle of fractal facets
@@ -16,9 +16,9 @@ areNormalsEnabled          0        # initial toggle of vertex normals
 fractalDepth               10       # iterations in the fractal generation
 fractalYRange              0.22     # initial Y range of the fractal
 fractalYDeviance           0.44     # initial Y deviance of the fractal
-fractalColourRed           0.261    # brightness of red colour (0 - 1.0)
-fractalColourGreen         0.741    # brightness of green colour (0 - 1.0)
-fractalColourBlue          0.476    # brightness of blue colour (0 - 1.0)
+fractalColourRed           0.44    # brightness of red colour (0 - 1.0)
+fractalColourGreen         0.80    # brightness of green colour (0 - 1.0)
+fractalColourBlue          0.30    # brightness of blue colour (0 - 1.0)
 
 # Camera properties
 cameraMovementSpeed        16.0     # movement speed of freemode camera
