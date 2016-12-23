@@ -8,6 +8,9 @@ isFullScreenEnabled         0      # initial toggle of fullscreen window
 # Environment properties
 isPointLightingEnabled      0      # initial toggle of point/direction lighting
 
+lightPositionX              12.0   # x position of light source
+lightPositionY              50.0   # y position of light source
+lightPositionZ              20.0   # z position of light source
 backgroundColourRed         0.41   # brightness of red colour (0 - 1.0)
 backgroundColourGreen       0.85   # brightness of green colour (0 - 1.0)
 backgroundColourBlue        0.99   # brightness of blue colour (0 - 1.0)

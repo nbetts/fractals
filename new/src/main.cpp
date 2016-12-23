@@ -137,7 +137,11 @@ GLvoid updateTime()
 GLvoid initialiseEnvironment()
 {
   env = readProfile(profile);
+
   isPointLightingEnabled = env["isPointLightingEnabled"];
+  lightPosition.x = env["lightPositionX"];
+  lightPosition.y = env["lightPositionY"];
+  lightPosition.z = env["lightPositionZ"];
 
   initialiseCamera();
   initialiseFractal();
@@ -289,7 +293,6 @@ GLvoid drawFractal()
   lightDiffuseLoc  = glGetUniformLocation(fractalShader, "light.diffuse");
   lightSpecularLoc = glGetUniformLocation(fractalShader, "light.specular");
 
-  // glUniform3f(lightDirectionLoc, -0.2f, -1.0f, -0.3f);
   glUniform4f(lightPositionLoc, lightPosition.x,
               lightPosition.y, lightPosition.z, isPointLightingEnabled);
   glUniform3f(lightAmbientLoc,  1.0f, 1.0f, 1.0f);
