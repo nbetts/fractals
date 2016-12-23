@@ -19,14 +19,16 @@ Fractal::Fractal(GLuint desiredDepth, GLfloat desiredYRange,
 
   indexCount = (size - 1) * (size - 1) * (2 * DIMENSIONS);
   vertexCount = size * size;
-
   attributeCount = 3;
+
+  positions = std::vector<std::vector<glm::vec3>>(size,
+                          std::vector<glm::vec3>(size));
+  normals   = std::vector<std::vector<glm::vec3>>(size,
+                          std::vector<glm::vec3>(size));
+  colours   = std::vector<std::vector<glm::vec3>>(size,
+                          std::vector<glm::vec3>(size));
+
   GLuint vertexDataSize = vertexCount * DIMENSIONS;
-
-  positions = new GLfloat[vertexDataSize];
-  normals   = new GLfloat[vertexDataSize];
-  colours   = new GLfloat[vertexDataSize];
-
   indexData  = new GLuint[indexCount];
   vertexData = new GLfloat[vertexDataSize * attributeCount];
   normalVertexData = new GLfloat[vertexDataSize * 2];
@@ -37,9 +39,7 @@ Fractal::Fractal(GLuint desiredDepth, GLfloat desiredYRange,
  */
 GLvoid Fractal::setY(GLuint x, GLuint z, GLfloat value)
 {
-  GLuint position = (x & (size - 1)) + (z & (size - 1)) * size;
-
-  positions[position * DIMENSIONS + 1] = value;
+  positions[x % size][z % size].y = value;
 }
 
 /**
@@ -47,9 +47,7 @@ GLvoid Fractal::setY(GLuint x, GLuint z, GLfloat value)
  */
 GLfloat Fractal::getY(GLuint x, GLuint z)
 {
-  GLuint position = (x & (size - 1)) + (z & (size - 1)) * size;
-
-  return positions[position * DIMENSIONS + 1];
+  return positions[x % size][z % size].y;
 }
 
 /**
@@ -118,13 +116,11 @@ GLvoid Fractal::generate()
  */
 GLvoid Fractal::updatePositions()
 {
-  GLuint offset = 0;
-
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
-      positions[offset++] = (GLfloat)(i % (GLuint)size) / (GLfloat)size;
-      offset++; // Y values are already set in generate().
-      positions[offset++] = (GLfloat)j / (GLfloat)size;
+      positions[i][j].x = (GLfloat)(i % (GLuint)size) / (GLfloat)size;
+      // The Y values are already set within generate().
+      positions[i][j].z = (GLfloat)j / (GLfloat)size;
     }
   }
 }
@@ -134,33 +130,22 @@ GLvoid Fractal::updatePositions()
  */
 GLvoid Fractal::updateNormals()
 {
-  GLuint offset = 0, increment = 0;
   glm::vec3 p1, p2, p3, v1, v2, normal;
 
-  for (GLuint i = 0; i < vertexCount; i++) {
-    p1 = glm::vec3(positions[(increment + 0)],
-                   positions[(increment + 1)],
-                   positions[(increment + 2)]);
-    p2 = glm::vec3(positions[(increment + 3)],
-                   positions[(increment + 4)],
-                   positions[(increment + 5)]);
-    p3 = glm::vec3(positions[((size * DIMENSIONS) + increment + 0)],
-                   positions[((size * DIMENSIONS) + increment + 1)],
-                   positions[((size * DIMENSIONS) + increment + 2)]);
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      p1 = positions[i][j];
+      p2 = positions[i][(j + 1) % size];
+      p3 = positions[(i + 1) % size][j];
 
-    v1 = p2 - p1,
-    v2 = p3 - p1;
+      v1 = p2 - p1,
+      v2 = p3 - p1;
 
-    normal.x = (v1.y * v2.z) - (v1.z * v2.y);
-    normal.y = (v1.z * v2.x) - (v1.x * v2.z);
-    normal.z = (v1.x * v2.y) - (v1.y * v2.x);
-    normal = glm::normalize(normal);
-
-    normals[offset++] = normal.x;
-    normals[offset++] = normal.y;
-    normals[offset++] = normal.z;
-
-    increment += DIMENSIONS;
+      normal.x = (v1.y * v2.z) - (v1.z * v2.y);
+      normal.y = (v1.z * v2.x) - (v1.x * v2.z);
+      normal.z = (v1.x * v2.y) - (v1.y * v2.x);
+      normals[i][j] = glm::normalize(normal);
+    }
   }
 }
 
@@ -170,15 +155,13 @@ GLvoid Fractal::updateNormals()
  */
 GLvoid Fractal::updateColours(GLfloat noise)
 {
-  GLuint offset = 0;
-
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
       GLfloat randomNoise = randomNumber(-noise, noise);
 
-      colours[offset++] = baseColour.x + randomNoise;
-      colours[offset++] = baseColour.y + randomNoise;
-      colours[offset++] = baseColour.z + randomNoise;
+      colours[i][j].x = baseColour.x + randomNoise;
+      colours[i][j].y = baseColour.y + randomNoise;
+      colours[i][j].z = baseColour.z + randomNoise;
     }
   }
 }
@@ -188,22 +171,22 @@ GLvoid Fractal::updateColours(GLfloat noise)
  */
 GLvoid Fractal::generateVertexData()
 {
-  GLuint offset = 0, increment = 0;
+  GLuint offset = 0;
 
-  for (GLuint i = 0; i < vertexCount; i++) {
-    vertexData[offset++] = positions[increment + 0];
-    vertexData[offset++] = positions[increment + 1];
-    vertexData[offset++] = positions[increment + 2];
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      vertexData[offset++] = positions[i][j].x;
+      vertexData[offset++] = positions[i][j].y;
+      vertexData[offset++] = positions[i][j].z;
 
-    vertexData[offset++] = normals[increment + 0];
-    vertexData[offset++] = normals[increment + 1];
-    vertexData[offset++] = normals[increment + 2];
+      vertexData[offset++] = normals[i][j].x;
+      vertexData[offset++] = normals[i][j].y;
+      vertexData[offset++] = normals[i][j].z;
 
-    vertexData[offset++] = colours[increment + 0];
-    vertexData[offset++] = colours[increment + 1];
-    vertexData[offset++] = colours[increment + 2];
-
-    increment += DIMENSIONS;
+      vertexData[offset++] = colours[i][j].x;
+      vertexData[offset++] = colours[i][j].y;
+      vertexData[offset++] = colours[i][j].z;
+    }
   }
 }
 
@@ -212,22 +195,22 @@ GLvoid Fractal::generateVertexData()
  */
 GLvoid Fractal::generateNormalVertexData()
 {
-  GLuint offset = 0, increment = 0;
+  GLuint offset = 0;
   GLfloat normalLength = 1.0f / size;
 
-  for (GLuint i = 0; i < vertexCount; i++) {
-    normalVertexData[offset++] = positions[increment + 0];
-    normalVertexData[offset++] = positions[increment + 1];
-    normalVertexData[offset++] = positions[increment + 2];
+  for (GLuint i = 0; i < size; i++) {
+    for (GLuint j = 0; j < size; j++) {
+      normalVertexData[offset++] = positions[i][j].x;
+      normalVertexData[offset++] = positions[i][j].y;
+      normalVertexData[offset++] = positions[i][j].z;
 
-    normalVertexData[offset++] = positions[increment + 0] +
-                                 (normals[increment + 0] * normalLength);
-    normalVertexData[offset++] = positions[increment + 1] +
-                                 (normals[increment + 1] * normalLength);
-    normalVertexData[offset++] = positions[increment + 2] +
-                                 (normals[increment + 2] * normalLength);
-
-    increment += DIMENSIONS;
+      normalVertexData[offset++] = positions[i][j].x +
+                                   (normals[i][j].x * normalLength);
+      normalVertexData[offset++] = positions[i][j].y +
+                                   (normals[i][j].y * normalLength);
+      normalVertexData[offset++] = positions[i][j].z +
+                                   (normals[i][j].z * normalLength);
+    }
   }
 }
 

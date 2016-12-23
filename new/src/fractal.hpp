@@ -43,9 +43,9 @@ class Fractal
     GLuint vertexCount;
     GLuint attributeCount;
 
-    GLfloat* positions;
-    GLfloat* normals;
-    GLfloat* colours;
+    std::vector<std::vector<glm::vec3>> positions;
+    std::vector<std::vector<glm::vec3>> normals;
+    std::vector<std::vector<glm::vec3>> colours;
 
     GLuint* indexData;
     GLfloat* vertexData;
