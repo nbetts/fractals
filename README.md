@@ -6,7 +6,7 @@ For a list of planned features, see `todo.txt`.
 
 ## Existing Fractals
 
-For a list of planned fractals, see `fractals.txt`.
+For a list of planned fractals, see [fractals.md](new/fractals.md).
 
 * Diamond-square algorithm:
 
