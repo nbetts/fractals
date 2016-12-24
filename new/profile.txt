@@ -2,7 +2,7 @@
 # [source name]            [value] [description]
 
 # System properties
-isFullScreenEnabled         0      # initial toggle of fullscreen window
+isFullScreenEnabled         1      # initial toggle of fullscreen window
 
 
 # Environment properties

@@ -484,8 +484,7 @@ GLvoid addVertexAttributes(GLuint shaderID)
 GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
 {
   GLint majorVersion, minorVersion, revision;
-  // GLint isFullscreen = argc > 1 ? atoi(argv[1]) : false;
-  GLint isFullscreen = env["isFullscreenEnabled"];
+  GLuint isFullscreen = env["isFullScreenEnabled"];
 
   // Initialise GLFW.
   glfwInit();
@@ -503,10 +502,10 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
   GLFWmonitor* monitor = nullptr;
 
   if (isFullscreen) {
+    monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode * videoMode = glfwGetVideoMode(monitor);
     width = videoMode->width;
     height = videoMode->height;
-    monitor = glfwGetPrimaryMonitor();
   }
   window = glfwCreateWindow(width, height, "Fractals", monitor, nullptr);
 
