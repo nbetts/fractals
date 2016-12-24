@@ -34,7 +34,7 @@ Camera camera(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f),
               0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
 // lighting info
-glm::vec3 lightPosition(0.0f, 100.0f, 0.0f);
+glm::vec3 lightPosition(0.0f);
 
 // fractal info
 Fractal fractal(0, 0.0f, 0.0f, glm::vec3(0.0f));
@@ -44,7 +44,7 @@ GLuint isCullingEnabled;
 GLfloat shineValue = 1.0f;
 
 // misc. info
-GLfloat backgroundColour[3];
+glm::vec3 backgroundColour(0.0f);
 
 /**
  * Listen for keyboard events.
@@ -382,9 +382,8 @@ GLvoid runMainLoop()
     updateCamera();
 
     // Clear the screen.
-    glClearColor(backgroundColour[0],
-                 backgroundColour[1],
-                 backgroundColour[2], 1.0f);
+    glClearColor(backgroundColour.x, backgroundColour.y,
+                 backgroundColour.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Draw functions.
@@ -535,9 +534,9 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   // Set the clear colour value.
-  backgroundColour[0] = env["backgroundColourRed"];
-  backgroundColour[1] = env["backgroundColourGreen"];
-  backgroundColour[2] = env["backgroundColourBlue"];
+  backgroundColour.x = env["backgroundColourRed"];
+  backgroundColour.y = env["backgroundColourGreen"];
+  backgroundColour.z = env["backgroundColourBlue"];
 }
 
 /**
