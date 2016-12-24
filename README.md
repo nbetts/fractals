@@ -2,11 +2,11 @@
 
 The aim of this program is to illustrate different types of fractals and allow you to customise various parameters to better understand how they work. They are all based on procedural modelling.
 
-For a list of planned features, see `todo.txt`.
+For a list of planned features, see [todo.md](new/todo.md)
 
 ## Existing Fractals
 
-For a list of planned fractals, see [fractals.md](new/fractals.md).
+For a list of planned fractals, see [fractals.md](new/fractals.md)
 
 * Diamond-square algorithm:
 
