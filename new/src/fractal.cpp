@@ -125,21 +125,15 @@ GLvoid Fractal::updatePositions()
  */
 GLvoid Fractal::updateNormals()
 {
-  glm::vec3 p1, p2, p3, v1, v2, normal;
+  glm::vec3 p1, p2, p3;
 
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
       p1 = positions[i][j];
       p2 = positions[i][(j + 1) % size];
       p3 = positions[(i + 1) % size][j];
-
-      v1 = p2 - p1,
-      v2 = p3 - p1;
-
-      normal.x = (v1.y * v2.z) - (v1.z * v2.y);
-      normal.y = (v1.z * v2.x) - (v1.x * v2.z);
-      normal.z = (v1.x * v2.y) - (v1.y * v2.x);
-      normals[i][j] = glm::normalize(normal);
+      
+      normals[i][j] = normalize(cross(p2 - p1, p3 - p1));
     }
   }
 }
