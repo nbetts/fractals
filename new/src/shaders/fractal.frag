@@ -18,7 +18,7 @@ in Data {
   vec3 position;
   vec3 normal;
   vec3 colour;
-} gData;
+} fragment;
 
 out vec4 colour;
 
@@ -28,8 +28,8 @@ uniform vec4 viewPosition;
 
 void main()
 {
-  vec3 normal = normalize(gData.normal);
-  vec4 position = vec4(gData.position, 1.0f);
+  vec3 normal = normalize(fragment.normal);
+  vec4 position = vec4(fragment.position, 1.0f);
   vec3 lightDirection;
 
   if (light.position.w == 0.0f) {
@@ -49,5 +49,5 @@ void main()
   vec3 diffuse  = light.diffuse * (material.diffuse * diffuseStrength);
   vec3 specular = light.specular * (material.specular * specularStrength);
 
-  colour = vec4(gData.colour * (ambient + diffuse + specular), 1.0f);
+  colour = vec4(fragment.colour * (ambient + diffuse + specular), 1.0f);
 }

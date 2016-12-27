@@ -7,13 +7,13 @@ in Data {
   vec3 position;
   vec3 normal;
   vec3 colour;
-} vData[];
+} vertices[];
 
 out Data {
   vec3 position;
   vec3 normal;
   vec3 colour;
-} gData;
+} fragment;
 
 const float MAGNITUDE = 0.2f;
 // uniform float magnitude;
@@ -22,17 +22,17 @@ void generateNormalLine(int index)
 {
   gl_Position = gl_in[index].gl_Position;
 
-  gData.position = vData[index].position;
-  gData.normal = vData[index].normal;
-  gData.colour = vData[index].colour;
+  fragment.position = vertices[index].position;
+  fragment.normal = vertices[index].normal;
+  fragment.colour = vertices[index].colour;
   EmitVertex();
 
   gl_Position = gl_in[index].gl_Position +
-                vec4(vData[index].normal, 0.0f) * MAGNITUDE;
+                vec4(vertices[index].normal, 0.0f) * MAGNITUDE;
 
-  gData.position = vData[index].position;
-  gData.normal = vData[index].normal;
-  gData.colour = vData[index].colour;
+  fragment.position = vertices[index].position;
+  fragment.normal = vertices[index].normal;
+  fragment.colour = vertices[index].colour;
   EmitVertex();
 
   EndPrimitive();
@@ -40,7 +40,7 @@ void generateNormalLine(int index)
 
 void main()
 {
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < gl_in.length(); i++) {
     generateNormalLine(i);
   }
 }

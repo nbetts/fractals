@@ -381,8 +381,8 @@ GLvoid initialiseBuffersAndShaders()
   }
 
   // Load the vertex and fragment shaders into a shader program.
-  Shader shader("src/shaders/fractal.vert", "src/shaders/fractal.frag",
-                "src/shaders/fractal.geom");
+  Shader shader("src/shaders/fractal.vert", "src/shaders/fractal.geom",
+                "src/shaders/fractal.frag");
   fractalShader = shader.programID;
 }
 
