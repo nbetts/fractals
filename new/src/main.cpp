@@ -10,7 +10,7 @@ GLint frameWidth, frameHeight;
 GLfloat aspectRatio;
 
 // Buffer and shader info.
-GLuint vao[2], vbo[2], ebo[2], fractalShader, normalShader;
+GLuint vao[1], vbo[1], ebo[1], fractalShader;
 
 // environment info
 const GLchar* profile;
@@ -336,30 +336,6 @@ GLvoid drawFractal()
     glDisable(GL_CULL_FACE);
   }
   glBindVertexArray(0);
-
-  // temp normals
-  if (areNormalsEnabled) {
-    glUseProgram(normalShader);
-    
-    modelLoc      = glGetUniformLocation(normalShader, "model");
-    viewLoc       = glGetUniformLocation(normalShader, "view");
-    projectionLoc = glGetUniformLocation(normalShader, "projection");
-
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(camera.view));
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(camera.projection));
-
-    glBindVertexArray(vao[Shader::NORMAL]);
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
-
-    if (isCullingEnabled) {
-      glDisable(GL_CULL_FACE);
-    }
-    glDrawArrays(GL_LINES, 0, fractal.vertexCount * 2);
-    if (isCullingEnabled) {
-      glEnable(GL_CULL_FACE);
-    }
-    glBindVertexArray(0);
-  }
 }
 
 /**
@@ -405,11 +381,9 @@ GLvoid initialiseBuffersAndShaders()
   }
 
   // Load the vertex and fragment shaders into a shader program.
-  Shader shader("src/shaders/fractal.vert", "src/shaders/fractal.frag");
-  fractalShader = shader.getProgramID();
-
-  shader = Shader("src/shaders/normal.vert", "src/shaders/normal.frag");
-  normalShader = shader.getProgramID();
+  Shader shader("src/shaders/fractal.vert", "src/shaders/fractal.frag",
+                "src/shaders/fractal.geom");
+  fractalShader = shader.programID;
 }
 
 /**
@@ -431,18 +405,6 @@ GLvoid updateFractalBuffer()
 
   addVertexAttributes(fractalShader);
 
-  // temp
-  glBindVertexArray(vao[Shader::NORMAL]);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo[Shader::NORMAL]);
-  glBufferData(GL_ARRAY_BUFFER, fractal.vertexCount * fractal.DIMENSIONS * 2 * sizeof(GLfloat),
-               fractal.normalVertexData, GL_STATIC_DRAW);
-
-  GLint attribute = glGetAttribLocation(normalShader, "position");
-  glVertexAttribPointer(attribute, 3, GL_FLOAT,
-                        GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-  glEnableVertexAttribArray(attribute);
-  // temp end
-
   // Unbind the vao, vbo and ebo.
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -457,7 +419,7 @@ GLvoid addVertexAttributes(GLuint shaderID)
   // Vertex attributes. These are consistent accross all shaders used.
   const GLint attributeCount = 3;
   const GLchar* attributeNames[attributeCount] =
-                {"position", "normal", "color"};
+                {"position", "normal", "colour"};
   GLint attributeSizes[attributeCount] = {3, 3, 3};
 
   GLint i, stride = 0, offset = 0;
@@ -526,7 +488,6 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
 
   // Set extra options.
   glEnable(GL_DEPTH_TEST);
-  glShadeModel(GL_FLAT);
 
   if (!env["isFacesEnabled"]) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
