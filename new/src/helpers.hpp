@@ -39,7 +39,7 @@ GLfloat average(std::initializer_list<GLfloat> values)
 /**
  * Read the whole content of a given file into a char array.
  */
-const GLchar* readFile(const GLchar* filename)
+const GLchar* readFile(std::string filename)
 {
   using namespace std;
 
