@@ -14,11 +14,13 @@ struct Light {
     vec3 specular;
 };
 
-in vec3 outPosition;
-in vec3 outNormal;
-in vec3 outColor;
+in Data {
+  vec3 position;
+  vec3 normal;
+  vec3 colour;
+} gData;
 
-out vec4 color;
+out vec4 colour;
 
 uniform Material material;
 uniform Light light;
@@ -26,8 +28,8 @@ uniform vec4 viewPosition;
 
 void main()
 {
-  vec3 normal = normalize(outNormal);
-  vec4 position = vec4(outPosition, 1.0f);
+  vec3 normal = normalize(gData.normal);
+  vec4 position = vec4(gData.position, 1.0f);
   vec3 lightDirection;
 
   if (light.position.w == 0.0f) {
@@ -47,5 +49,5 @@ void main()
   vec3 diffuse  = light.diffuse * (material.diffuse * diffuseStrength);
   vec3 specular = light.specular * (material.specular * specularStrength);
 
-  color = vec4(outColor * (ambient + diffuse + specular), 1.0f);
+  colour = vec4(gData.colour * (ambient + diffuse + specular), 1.0f);
 }
