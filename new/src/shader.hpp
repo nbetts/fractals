@@ -9,21 +9,18 @@
 
 class Shader
 {
-  // Shader program ID
-  GLuint programID;
-
   public:
+    GLuint programID;
+
     typedef enum {
       FRACTAL,
-      NORMAL,
       NONE // only used for enum iteration
     } ShaderType;
     
-    Shader(const GLchar* vertexFile, const GLchar* fragmentFile);
+    Shader(const GLchar* vertexFile, const GLchar* fragmentFile,
+           const GLchar* geometryFile);
     GLvoid setAttributes(GLint attributeCount, const GLchar** attributeNames,
                          GLint* attributeSizes);
-    GLvoid use();
-    GLuint getProgramID();
 };
   
 #endif

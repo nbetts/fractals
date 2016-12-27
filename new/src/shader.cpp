@@ -8,7 +8,8 @@
 /**
  * Constructor to read and create the shader.
  */
-Shader::Shader(const GLchar* vertexFile, const GLchar* fragmentFile)
+Shader::Shader(const GLchar* vertexFile, const GLchar* fragmentFile,
+               const GLchar* geometryFile)
 {
   GLint compileStatus;
   GLchar compileLog[LOG_MSG_LENGTH];
@@ -16,8 +17,11 @@ Shader::Shader(const GLchar* vertexFile, const GLchar* fragmentFile)
   // 1. Retrieve the vertex/fragment source code from the given file paths.
   const GLchar* vertexShaderSource = readFile(vertexFile);
   const GLchar* fragmentShaderSource = readFile(fragmentFile);
+  const GLchar* geometryShaderSource = readFile(geometryFile);
 
   // 2. Compile and compile the shaders.
+
+  // Vertex shader
   GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertexShaderID, 1, &vertexShaderSource, NULL);
   glCompileShader(vertexShaderID);
@@ -25,12 +29,13 @@ Shader::Shader(const GLchar* vertexFile, const GLchar* fragmentFile)
 
   if (compileStatus != GL_TRUE) {
     glGetShaderInfoLog(vertexShaderID, LOG_MSG_LENGTH, NULL, compileLog);
-    printf("Vertex compilation error (ID: %d) in file: %s\n%s\n",
+    fprintf(stderr, "\nVertex compilation error (ID: %d) in file: %s\n%s\n",
            vertexShaderID, vertexFile, compileLog);
 
     exit(EXIT_FAILURE);
   }
 
+  // Fragment shader
   GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragmentShaderID, 1, &fragmentShaderSource, NULL);
   glCompileShader(fragmentShaderID);
@@ -38,8 +43,22 @@ Shader::Shader(const GLchar* vertexFile, const GLchar* fragmentFile)
 
   if (compileStatus != GL_TRUE) {
     glGetShaderInfoLog(fragmentShaderID, LOG_MSG_LENGTH, NULL, compileLog);
-    printf("Fragment compilation error (ID: %d) in file: %s\n%s\n",
+    fprintf(stderr, "\nFragment compilation error (ID: %d) in file: %s\n%s\n",
            fragmentShaderID, fragmentFile, compileLog);
+
+    exit(EXIT_FAILURE);
+  }
+
+  // Geometry shader
+  GLuint geometryShaderID = glCreateShader(GL_GEOMETRY_SHADER);
+  glShaderSource(geometryShaderID, 1, &geometryShaderSource, NULL);
+  glCompileShader(geometryShaderID);
+  glGetShaderiv(geometryShaderID, GL_COMPILE_STATUS, &compileStatus);
+
+  if (compileStatus != GL_TRUE) {
+    glGetShaderInfoLog(geometryShaderID, LOG_MSG_LENGTH, NULL, compileLog);
+    fprintf(stderr, "\nGeometry compilation error (ID: %d) in file: %s\n%s\n",
+           geometryShaderID, geometryFile, compileLog);
 
     exit(EXIT_FAILURE);
   }
@@ -48,13 +67,13 @@ Shader::Shader(const GLchar* vertexFile, const GLchar* fragmentFile)
   programID = glCreateProgram();
   glAttachShader(programID, vertexShaderID);
   glAttachShader(programID, fragmentShaderID);
-  // glBindFragDataLocation(programID, 0, "color");
+  // glAttachShader(programID, geometryShaderID);
   glLinkProgram(programID);
   glGetProgramiv(programID, GL_LINK_STATUS, &compileStatus);
 
   if (compileStatus != GL_TRUE) {
     glGetProgramInfoLog(programID, LOG_MSG_LENGTH, NULL, compileLog);
-    printf("Shader program compilation error (ID: %d):\n%s\n",
+    fprintf(stderr, "\nShader program compilation error (ID: %d):\n%s\n",
            programID, compileLog);
 
     exit(EXIT_FAILURE);
@@ -63,8 +82,10 @@ Shader::Shader(const GLchar* vertexFile, const GLchar* fragmentFile)
   // Delete the shaders as they are now linked to the program.
   glDetachShader(programID, vertexShaderID);
   glDetachShader(programID, fragmentShaderID);
+  glDetachShader(programID, geometryShaderID);
   glDeleteShader(vertexShaderID);
   glDeleteShader(fragmentShaderID);
+  glDeleteShader(geometryShaderID);
 }
 
 /**
@@ -90,20 +111,4 @@ GLvoid Shader::setAttributes(GLint attributeCount,
     glEnableVertexAttribArray(attribute);
     offset += attributeSizes[i];
   }
-}
-
-/**
- * Use the shader program.
- */
-GLvoid Shader::use()
-{
-  glUseProgram(programID);
-}
-
-/**
- * Get the shader program ID.
- */
-GLuint Shader::getProgramID()
-{
-  return programID;
 }
