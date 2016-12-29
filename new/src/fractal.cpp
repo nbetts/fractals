@@ -179,26 +179,26 @@ GLvoid Fractal::generateVertexData()
 /**
  * Generate the vertex normal data.
  */
-GLvoid Fractal::generateNormalVertexData()
-{
-  GLuint offset = 0;
-  GLfloat normalLength = 1.0f / size;
+// GLvoid Fractal::generateNormalVertexData()
+// {
+//   GLuint offset = 0;
+//   GLfloat normalLength = 1.0f / size;
 
-  for (GLuint i = 0; i < size; i++) {
-    for (GLuint j = 0; j < size; j++) {
-      normalVertexData[offset++] = positions[i][j].x;
-      normalVertexData[offset++] = positions[i][j].y;
-      normalVertexData[offset++] = positions[i][j].z;
+//   for (GLuint i = 0; i < size; i++) {
+//     for (GLuint j = 0; j < size; j++) {
+//       normalVertexData[offset++] = positions[i][j].x;
+//       normalVertexData[offset++] = positions[i][j].y;
+//       normalVertexData[offset++] = positions[i][j].z;
 
-      normalVertexData[offset++] = positions[i][j].x +
-                                   (normals[i][j].x * normalLength);
-      normalVertexData[offset++] = positions[i][j].y +
-                                   (normals[i][j].y * normalLength);
-      normalVertexData[offset++] = positions[i][j].z +
-                                   (normals[i][j].z * normalLength);
-    }
-  }
-}
+//       normalVertexData[offset++] = positions[i][j].x +
+//                                    (normals[i][j].x * normalLength);
+//       normalVertexData[offset++] = positions[i][j].y +
+//                                    (normals[i][j].y * normalLength);
+//       normalVertexData[offset++] = positions[i][j].z +
+//                                    (normals[i][j].z * normalLength);
+//     }
+//   }
+// }
 
 /**
  * Generate the vertex index data.
@@ -233,7 +233,7 @@ GLvoid Fractal::generateIndexData()
 GLvoid Fractal::updateVertexData()
 {
   generateVertexData();
-  generateNormalVertexData();
+  // generateNormalVertexData();
   generateIndexData();
 }
 

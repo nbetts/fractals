@@ -27,6 +27,7 @@ fractalYDeviance            0.44   # initial Y deviance of the fractal
 fractalColourRed            0.44   # brightness of red colour (0 - 1.0)
 fractalColourGreen          0.80   # brightness of green colour (0 - 1.0)
 fractalColourBlue           0.30   # brightness of blue colour (0 - 1.0)
+normalLength                2.0    # length of the visualised normal lines
 
 isSmoothingPositionsEnabled 1      # initial toggle of vertex position smoothing
 isSmoothingNormalsEnabled   1      # initial toggle of vertex normal smoothing

@@ -17,8 +17,8 @@ class Shader
       NONE // only used for enum iteration
     } ShaderType;
     
-    Shader(std::string vertexFile, std::string geometryFile,
-           std::string fragmentFile);
+    Shader(std::string vertexFile, std::string fragmentFile,
+           std::string geometryFile);
     GLvoid setAttributes(GLint attributeCount, const GLchar** attributeNames,
                          GLint* attributeSizes);
 };

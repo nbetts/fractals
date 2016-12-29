@@ -10,16 +10,17 @@
  * shader source code from the given vertex/geometry/fragment files and
  * compiling the code, then linking them into a shader program.
  */
-Shader::Shader(std::string vertexFile, std::string geometryFile,
-               std::string fragmentFile)
+Shader::Shader(std::string vertexFile, std::string fragmentFile,
+               std::string geometryFile = "")
 {
   GLint compileStatus;
   GLchar compileLog[LOG_MSG_LENGTH];
+  GLuint vertexShaderID, fragmentShaderID, geometryShaderID = 0;
   GLuint isGeometryShaderIncluded = !geometryFile.empty();
 
   // Vertex shader
   const GLchar* vertexShaderSource = readFile(vertexFile);
-  GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+  vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertexShaderID, 1, &vertexShaderSource, NULL);
   glCompileShader(vertexShaderID);
   glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &compileStatus);
@@ -27,31 +28,14 @@ Shader::Shader(std::string vertexFile, std::string geometryFile,
   if (compileStatus != GL_TRUE) {
     glGetShaderInfoLog(vertexShaderID, LOG_MSG_LENGTH, NULL, compileLog);
     fprintf(stderr, "\nVertex compilation error (ID: %d) in file: %s\n%s\n",
-           vertexShaderID, vertexFile.c_str(), compileLog);
+            vertexShaderID, vertexFile.c_str(), compileLog);
 
     exit(EXIT_FAILURE);
   }
 
-  // Geometry shader
-  if (isGeometryShaderIncluded) {
-    const GLchar* geometryShaderSource = readFile(geometryFile);
-    GLuint geometryShaderID = glCreateShader(GL_GEOMETRY_SHADER);
-    glShaderSource(geometryShaderID, 1, &geometryShaderSource, NULL);
-    glCompileShader(geometryShaderID);
-    glGetShaderiv(geometryShaderID, GL_COMPILE_STATUS, &compileStatus);
-
-    if (compileStatus != GL_TRUE) {
-      glGetShaderInfoLog(geometryShaderID, LOG_MSG_LENGTH, NULL, compileLog);
-      fprintf(stderr, "\nGeometry compilation error (ID: %d) in file: %s\n%s\n",
-             geometryShaderID, geometryFile.c_str(), compileLog);
-
-      exit(EXIT_FAILURE);
-    }
-  }
-
   // Fragment shader
   const GLchar* fragmentShaderSource = readFile(fragmentFile);
-  GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+  fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragmentShaderID, 1, &fragmentShaderSource, NULL);
   glCompileShader(fragmentShaderID);
   glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &compileStatus);
@@ -59,18 +43,35 @@ Shader::Shader(std::string vertexFile, std::string geometryFile,
   if (compileStatus != GL_TRUE) {
     glGetShaderInfoLog(fragmentShaderID, LOG_MSG_LENGTH, NULL, compileLog);
     fprintf(stderr, "\nFragment compilation error (ID: %d) in file: %s\n%s\n",
-           fragmentShaderID, fragmentFile.c_str(), compileLog);
+            fragmentShaderID, fragmentFile.c_str(), compileLog);
 
     exit(EXIT_FAILURE);
+  }
+
+  // Geometry shader
+  if (isGeometryShaderIncluded) {
+    const GLchar* geometryShaderSource = readFile(geometryFile);
+    geometryShaderID = glCreateShader(GL_GEOMETRY_SHADER);
+    glShaderSource(geometryShaderID, 1, &geometryShaderSource, NULL);
+    glCompileShader(geometryShaderID);
+    glGetShaderiv(geometryShaderID, GL_COMPILE_STATUS, &compileStatus);
+
+    if (compileStatus != GL_TRUE) {
+      glGetShaderInfoLog(geometryShaderID, LOG_MSG_LENGTH, NULL, compileLog);
+      fprintf(stderr, "\nGeometry compilation error (ID: %d) in file: %s\n%s\n",
+              geometryShaderID, geometryFile.c_str(), compileLog);
+
+      exit(EXIT_FAILURE);
+    }
   }
 
   // Create and compile the shader program.
   programID = glCreateProgram();
   glAttachShader(programID, vertexShaderID);
   glAttachShader(programID, fragmentShaderID);
-  
+
   if (isGeometryShaderIncluded) {
-    // glAttachShader(programID, geometryShaderID);
+    glAttachShader(programID, geometryShaderID);
   }
 
   glLinkProgram(programID);

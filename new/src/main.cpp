@@ -10,7 +10,7 @@ GLint frameWidth, frameHeight;
 GLfloat aspectRatio;
 
 // Buffer and shader info.
-GLuint vao[1], vbo[1], ebo[1], fractalShader;
+GLuint vao[1], vbo[1], ebo[1], fractalShader, normalShader;
 
 // environment info
 const GLchar* profile;
@@ -42,6 +42,7 @@ GLuint areNormalsEnabled;
 GLuint isPointLightingEnabled;
 GLuint isCullingEnabled;
 GLfloat shineValue = 1.0f;
+GLfloat defaultNormalLength, normalLength;
 
 // misc. info
 glm::vec3 backgroundColour(0.0f);
@@ -227,6 +228,7 @@ GLvoid initialiseFractal()
                               env["fractalColourBlue"]));
   areNormalsEnabled = env["areNormalsEnabled"];
   isCullingEnabled = env["isCullingEnabled"];
+  normalLength = env["normalLength"];
 }
 
 /**
@@ -262,6 +264,8 @@ GLvoid generateFractal()
   if (isModified) {
     fractal.updateVertexData();
   }
+
+  defaultNormalLength = 1.0f / (GLfloat)fractal.size;
 }
 
 /**
@@ -271,18 +275,32 @@ GLvoid drawFractal()
 {
   using namespace glm;
 
-  mat4 model, view, projection;
-
+  mat4 model;
+  GLuint normalLengthLoc;
   GLuint matAmbientLoc, matDiffuseLoc, matSpecularLoc, matShineLoc;
   GLuint lightPositionLoc, lightAmbientLoc, lightDiffuseLoc, lightSpecularLoc;
-  GLuint viewPosLoc;
-  GLuint modelLoc, viewLoc, projectionLoc;
+  GLuint modelLoc, viewLoc, projectionLoc, viewPosLoc;
 
   GLfloat scaleFactor = 100.0f;
   GLfloat yOffset = fractal.getYPosition(fractal.size / 2, fractal.size / 2) +
                                          (2.0f / scaleFactor);
+  model = scale(model, vec3(scaleFactor));
+  model = translate(model, vec3(-0.5f, -yOffset, -0.5f));
 
   glUseProgram(fractalShader);
+
+  // Transform the shader program's vertices with the model, view and
+  // projection matrices.
+  viewPosLoc  = glGetUniformLocation(fractalShader, "viewPosition");
+  modelLoc      = glGetUniformLocation(fractalShader, "model");
+  viewLoc       = glGetUniformLocation(fractalShader, "view");
+  projectionLoc = glGetUniformLocation(fractalShader, "projection");
+
+  glUniform4f(viewPosLoc, camera.position.x,
+              camera.position.y, camera.position.z, 1.0f);
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(camera.view));
+  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(camera.projection));
 
   // Material uniforms
   matAmbientLoc  = glGetUniformLocation(fractalShader, "material.ambient");
@@ -306,36 +324,36 @@ GLvoid drawFractal()
   glUniform3f(lightAmbientLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightDiffuseLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
-
-  // View position uniform
-  viewPosLoc  = glGetUniformLocation(fractalShader, "viewPosition");
-
-  glUniform4f(viewPosLoc, camera.position.x,
-              camera.position.y, camera.position.z, 1.0f);
   
-  // Transform the shader program's vertices with the model, view and
-  // projection matrices.
-  modelLoc      = glGetUniformLocation(fractalShader, "model");
-  viewLoc       = glGetUniformLocation(fractalShader, "view");
-  projectionLoc = glGetUniformLocation(fractalShader, "projection");
-
-  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(camera.view));
-  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, value_ptr(camera.projection));
-
-  // Draw functions.
-  glBindVertexArray(vao[Shader::FRACTAL]);
-  model = scale(model, vec3(scaleFactor));
-  model = translate(model, vec3(-0.5f, -yOffset, -0.5f));
-  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
-
   if (isCullingEnabled) {
     glEnable(GL_CULL_FACE);
   }
+  glBindVertexArray(vao[Shader::FRACTAL]);
   glDrawElements(GL_TRIANGLES, fractal.indexCount, GL_UNSIGNED_INT, 0);
   if (isCullingEnabled) {
     glDisable(GL_CULL_FACE);
   }
   glBindVertexArray(0);
+
+  if (areNormalsEnabled) {
+    glUseProgram(normalShader);
+
+    modelLoc      = glGetUniformLocation(normalShader, "model");
+    viewLoc       = glGetUniformLocation(normalShader, "view");
+    projectionLoc = glGetUniformLocation(normalShader, "projection");
+
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, value_ptr(camera.view));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE,value_ptr(camera.projection));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
+
+    normalLengthLoc = glGetUniformLocation(normalShader, "normalLength");
+    glUniform1f(normalLengthLoc, defaultNormalLength *
+                                 normalLength * scaleFactor);
+    
+    glBindVertexArray(vao[Shader::FRACTAL]);
+    glDrawElements(GL_TRIANGLES, fractal.indexCount, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+  }
 }
 
 /**
@@ -381,9 +399,12 @@ GLvoid initialiseBuffersAndShaders()
   }
 
   // Load the vertex and fragment shaders into a shader program.
-  Shader shader("src/shaders/fractal.vert", "src/shaders/fractal.geom",
-                "src/shaders/fractal.frag");
+  Shader shader("src/shaders/fractal.vert", "src/shaders/fractal.frag",
+                "src/shaders/fractal.geom");
   fractalShader = shader.programID;
+  shader = Shader("src/shaders/fractal.vert", "src/shaders/normal.frag",
+                  "src/shaders/normal.geom");
+  normalShader = shader.programID;
 }
 
 /**
@@ -488,6 +509,8 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
 
   // Set extra options.
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   if (!env["isFacesEnabled"]) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
