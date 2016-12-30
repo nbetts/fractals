@@ -38,8 +38,10 @@ glm::vec3 lightPosition(0.0f);
 
 // fractal info
 Fractal fractal(0, 0.0f, 0.0f, glm::vec3(0.0f));
-GLuint areNormalsEnabled;
 GLuint isPointLightingEnabled;
+GLuint areFacesEnabled;
+GLuint areNormalsEnabled;
+GLuint isWireframeEnabled;
 GLuint isCullingEnabled;
 GLfloat shineValue = 1.0f;
 GLfloat defaultNormalLength, normalLength;
@@ -74,12 +76,8 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
       updateFractalBuffer();
       break;
     case GLFW_KEY_F:
-      if (env["isFacesEnabled"]) {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      } else {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-      }
-      env["isFacesEnabled"] = !env["isFacesEnabled"];
+      areFacesEnabled = !areFacesEnabled;
+      env["areFacesEnabled"] = !env["areFacesEnabled"];
       break;
     case GLFW_KEY_C:
       isCullingEnabled = !isCullingEnabled;
@@ -88,6 +86,10 @@ GLvoid keyboard(GLFWwindow* window, GLint key, GLint scancode,
     case GLFW_KEY_N:
       areNormalsEnabled = !areNormalsEnabled;
       env["areNormalsEnabled"] = areNormalsEnabled;
+      break;
+    case GLFW_KEY_X:
+      isWireframeEnabled = !isWireframeEnabled;
+      env["isWireframeEnabled"] = isWireframeEnabled;
       break;
     case GLFW_KEY_P:
       isPointLightingEnabled = !isPointLightingEnabled;
@@ -226,7 +228,9 @@ GLvoid initialiseFractal()
                     glm::vec3(env["fractalColourRed"],
                               env["fractalColourGreen"],
                               env["fractalColourBlue"]));
+  areFacesEnabled = env["areFacesEnabled"];
   areNormalsEnabled = env["areNormalsEnabled"];
+  isWireframeEnabled = env["isWireframeEnabled"];
   isCullingEnabled = env["isCullingEnabled"];
   normalLength = env["normalLength"];
 }
@@ -276,7 +280,7 @@ GLvoid drawFractal()
   using namespace glm;
 
   mat4 model;
-  GLuint normalLengthLoc;
+  GLuint normalLengthLoc, wireframeLoc, facesLoc;
   GLuint matAmbientLoc, matDiffuseLoc, matSpecularLoc, matShineLoc;
   GLuint lightPositionLoc, lightAmbientLoc, lightDiffuseLoc, lightSpecularLoc;
   GLuint modelLoc, viewLoc, projectionLoc, viewPosLoc;
@@ -324,6 +328,11 @@ GLvoid drawFractal()
   glUniform3f(lightAmbientLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightDiffuseLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
+
+  wireframeLoc = glGetUniformLocation(fractalShader, "isWireframeEnabled");
+  facesLoc = glGetUniformLocation(fractalShader, "areFacesEnabled");
+  glUniform1f(wireframeLoc, isWireframeEnabled);
+  glUniform1f(facesLoc, areFacesEnabled);
   
   if (isCullingEnabled) {
     glEnable(GL_CULL_FACE);
@@ -508,14 +517,10 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
   glViewport(0, 0, frameWidth, frameHeight);
 
   // Set extra options.
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  if (!env["isFacesEnabled"]) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  }
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   // Set the clear colour value.
   backgroundColour.x = env["backgroundColourRed"];

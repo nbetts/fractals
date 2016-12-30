@@ -2,6 +2,7 @@
 
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
+// layout (line_strip, max_vertices = 2) out;
 
 in Data {
   vec4 position;
@@ -14,6 +15,7 @@ out Data {
   vec4 position;
   vec3 normal;
   vec4 colour;
+  noperspective vec3 wireframeDistance;
 } fragment;
 
 void shadeVertex(int index)
@@ -22,6 +24,8 @@ void shadeVertex(int index)
   fragment.position = vertices[index].position;
   fragment.normal = vertices[index].normal;
   fragment.colour = vertices[index].colour;
+  fragment.wireframeDistance = vec3(0.0f);
+  fragment.wireframeDistance[index] = 1.0f;
 
   EmitVertex();
 }

@@ -31,8 +31,9 @@ Move the mouse to turn the camera and zoom with the mouse scroll.
 | K     | move light down       |
 | O     | move light left       |
 | L     | move light right      |
-| F     | toggle facets         |
+| F     | toggle vertex facets  |
 | N     | toggle vertex normals |
+| X     | toggle fractal wireframe |
 | Z     | invert fractal shine  |
 
 ## Profile Settings
@@ -51,7 +52,8 @@ These following settings allow you to adjust various parameters before running t
 | backgroundColourGreen       | 0.0-1.0     | Brightness of sky green colour              |
 | backgroundColourBlue        | 0.0-1.0     | Brightness of sky blue colour               |
 | _Fractal properties_        |             |                                             |
-| isFacesEnabled              | 0,1         | Initial toggle of fractal facets            |
+| areFacesEnabled             | 0,1         | Initial toggle of fractal facets            |
+| isWireframeEnabled          | 0,1         | Initial toggle of fractal wireframe         |
 | areNormalsEnabled           | 0,1         | Initial toggle of vertex normals            |
 | isCullingEnabled            | 0,1         | Initial toggle of vertex culling            |
 | fractalDepth                | 1-∞         | Iterations in the fractal generation        |
@@ -60,6 +62,7 @@ These following settings allow you to adjust various parameters before running t
 | fractalColourRed            | 0.0-1.0     | Brightness of fractal red colour            |
 | fractalColourGreen          | 0.0-1.0     | Brightness of fractal green colour          |
 | fractalColourBlue           | 0.0-1.0     | Brightness of fractal blue colour           |
+| normalLength                | -∞-∞        | Length of the visualised normal lines       |
 | isSmoothingPositionsEnabled | 0,1         | Initial toggle of vertex position smoothing |
 | isSmoothingNormalsEnabled   | 0,1         | Initial toggle of vertex normal smoothing   |
 | isSmoothingColoursEnabled   | 0,1         | Initial toggle of vertex colour smoothing   |
