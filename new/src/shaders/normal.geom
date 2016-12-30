@@ -14,21 +14,22 @@ out Data {
   vec4 colour;
 } fragment;
 
-const vec4 purple = vec4(0.25f, 0.0f, 1.0f, 1.0f);
-const vec4 lightPurple  = vec4(0.5f, 0.5f, 1.0f, 0.0f);
 uniform float normalLength;
 
 void main()
 {
   for (int i = 0; i < gl_in.length(); i++) {
-    gl_Position = gl_in[i].gl_Position;
-    fragment.colour = purple;
-    EmitVertex();
+    vec4 oppositeColour = 1.0f - vertices[i].colour;
 
     gl_Position = gl_in[i].gl_Position + (vertices[i].vNormal * normalLength);
-    fragment.colour = lightPurple;
+    fragment.colour = oppositeColour;
     EmitVertex();
-    
+
+    gl_Position = gl_in[i].gl_Position;
+    oppositeColour.w = 1.0f;
+    fragment.colour = oppositeColour;
+    EmitVertex();
+
     EndPrimitive();
   }
 
