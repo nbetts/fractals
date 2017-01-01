@@ -2,7 +2,6 @@
 
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
-// layout (line_strip, max_vertices = 2) out;
 
 in Data {
   vec4 position;

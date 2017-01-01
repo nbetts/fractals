@@ -45,6 +45,7 @@ GLuint isWireframeEnabled;
 GLuint isCullingEnabled;
 GLfloat shineValue = 1.0f;
 GLfloat defaultNormalLength, normalLength;
+glm::vec4 wireframeColour;
 
 // misc. info
 glm::vec3 backgroundColour(0.0f);
@@ -233,6 +234,10 @@ GLvoid initialiseFractal()
   isWireframeEnabled = env["isWireframeEnabled"];
   isCullingEnabled = env["isCullingEnabled"];
   normalLength = env["normalLength"];
+  wireframeColour.x = env["wireframeColourRed"];
+  wireframeColour.y = env["wireframeColourGreen"];
+  wireframeColour.z = env["wireframeColourBlue"];
+  wireframeColour.w = env["wireframeColourAlpha"];
 }
 
 /**
@@ -280,7 +285,7 @@ GLvoid drawFractal()
   using namespace glm;
 
   mat4 model;
-  GLuint normalLengthLoc, wireframeLoc, facesLoc;
+  GLuint normalLengthLoc, facesLoc, wireframeLoc, wireframeColourLoc;
   GLuint matAmbientLoc, matDiffuseLoc, matSpecularLoc, matShineLoc;
   GLuint lightPositionLoc, lightAmbientLoc, lightDiffuseLoc, lightSpecularLoc;
   GLuint modelLoc, viewLoc, projectionLoc, viewPosLoc;
@@ -329,10 +334,13 @@ GLvoid drawFractal()
   glUniform3f(lightDiffuseLoc,  1.0f, 1.0f, 1.0f);
   glUniform3f(lightSpecularLoc, 1.0f, 1.0f, 1.0f);
 
-  wireframeLoc = glGetUniformLocation(fractalShader, "isWireframeEnabled");
   facesLoc = glGetUniformLocation(fractalShader, "areFacesEnabled");
-  glUniform1f(wireframeLoc, isWireframeEnabled);
+  wireframeLoc = glGetUniformLocation(fractalShader, "isWireframeEnabled");
+  wireframeColourLoc = glGetUniformLocation(fractalShader, "wireframeColour");
   glUniform1f(facesLoc, areFacesEnabled);
+  glUniform1f(wireframeLoc, isWireframeEnabled);
+  glUniform4f(wireframeColourLoc, wireframeColour.x, wireframeColour.y,
+                                  wireframeColour.z, wireframeColour.a);
   
   if (isCullingEnabled) {
     glEnable(GL_CULL_FACE);

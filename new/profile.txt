@@ -29,6 +29,10 @@ fractalColourRed            0.44   # brightness of red colour (0 - 1.0)
 fractalColourGreen          0.80   # brightness of green colour (0 - 1.0)
 fractalColourBlue           0.30   # brightness of blue colour (0 - 1.0)
 normalLength                2.0    # length of the visualised normal lines
+wireframeColourRed          0.5    # brightness of wireframce red colour
+wireframeColourGreen        0.9    # brightness of wireframce green colour
+wireframeColourBlue         0.7    # brightness of wireframce blue colour
+wireframeColourAlpha        1.0    # alpha value of wireframce colour
 
 isSmoothingPositionsEnabled 1      # initial toggle of vertex position smoothing
 isSmoothingNormalsEnabled   1      # initial toggle of vertex normal smoothing

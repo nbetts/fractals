@@ -247,6 +247,7 @@ GLvoid Fractal::updateVertexData()
 GLvoid Fractal::smoothPositions(std::vector<std::vector<GLfloat>> kernel)
 {
   GLuint kernelSize = kernel.size();
+// printf("hi %d\n", size * size);
   GLfloat accumulator;
   GLfloat newYValues[size][size];
 

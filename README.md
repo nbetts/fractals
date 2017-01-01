@@ -63,6 +63,10 @@ These following settings allow you to adjust various parameters before running t
 | fractalColourGreen          | 0.0-1.0     | Brightness of fractal green colour          |
 | fractalColourBlue           | 0.0-1.0     | Brightness of fractal blue colour           |
 | normalLength                | -∞-∞        | Length of the visualised normal lines       |
+| wireframeColourRed          | 0.0-1.0     | Brightness of wireframce red colour         |
+| wireframeColourGreen        | 0.0-1.0     | Brightness of wireframce green colour       |
+| wireframeColourBlue         | 0.0-1.0     | Brightness of wireframce blue colour        |
+| wireframeColourAlpha        | 0.0-1.0     | Alpha value of wireframce colour            |
 | isSmoothingPositionsEnabled | 0,1         | Initial toggle of vertex position smoothing |
 | isSmoothingNormalsEnabled   | 0,1         | Initial toggle of vertex normal smoothing   |
 | isSmoothingColoursEnabled   | 0,1         | Initial toggle of vertex colour smoothing   |

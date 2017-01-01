@@ -26,6 +26,7 @@ out vec4 colour;
 uniform Material material;
 uniform Light light;
 uniform vec4 viewPosition;
+uniform vec4 wireframeColour;
 uniform bool isWireframeEnabled;
 uniform bool areFacesEnabled;
 
@@ -58,7 +59,8 @@ void main()
   }
 
   if (wireframeEnabled) {
-    vec3 a3 = smoothstep(vec3(0.0f), fwidth(fragment.wireframeDistance),
+    // float dist = sqrt(distance(viewPosition, fragment.position));
+    vec3 a3 = smoothstep(vec3(0.0f), fwidth(fragment.wireframeDistance) * 0.9f,
                          fragment.wireframeDistance);
     float lineWidth = min(min(a3.x, a3.y), a3.z);
 
@@ -66,8 +68,9 @@ void main()
       colour = vec4(mix(finalColour.rgb, vec3(0.0f), lineWidth),
                     1.0f - lineWidth);
     } else {
-      colour = vec4(mix(1.0f - finalColour.rgb, finalColour.rgb, lineWidth),
+      colour = vec4(mix(wireframeColour.rgb, finalColour.rgb, lineWidth),
                     finalColour.a);
+
     }
   } else {
     colour = finalColour;
