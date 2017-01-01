@@ -234,10 +234,10 @@ GLvoid initialiseFractal()
   isWireframeEnabled = env["isWireframeEnabled"];
   isCullingEnabled = env["isCullingEnabled"];
   normalLength = env["normalLength"];
-  wireframeColour.x = env["wireframeColourRed"];
-  wireframeColour.y = env["wireframeColourGreen"];
-  wireframeColour.z = env["wireframeColourBlue"];
-  wireframeColour.w = env["wireframeColourAlpha"];
+  wireframeColour.r = env["wireframeColourRed"];
+  wireframeColour.g = env["wireframeColourGreen"];
+  wireframeColour.b = env["wireframeColourBlue"];
+  wireframeColour.a = env["wireframeColourAlpha"];
 }
 
 /**
@@ -339,8 +339,8 @@ GLvoid drawFractal()
   wireframeColourLoc = glGetUniformLocation(fractalShader, "wireframeColour");
   glUniform1f(facesLoc, areFacesEnabled);
   glUniform1f(wireframeLoc, isWireframeEnabled);
-  glUniform4f(wireframeColourLoc, wireframeColour.x, wireframeColour.y,
-                                  wireframeColour.z, wireframeColour.a);
+  glUniform4f(wireframeColourLoc, wireframeColour.r, wireframeColour.g,
+                                  wireframeColour.b, wireframeColour.a);
   
   if (isCullingEnabled) {
     glEnable(GL_CULL_FACE);
@@ -393,8 +393,8 @@ GLvoid runMainLoop()
     updateCamera();
 
     // Clear the screen.
-    glClearColor(backgroundColour.x, backgroundColour.y,
-                 backgroundColour.z, 1.0f);
+    glClearColor(backgroundColour.r, backgroundColour.g,
+                 backgroundColour.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Draw functions.
@@ -531,9 +531,9 @@ GLvoid initialiseGraphics(GLint argc, GLchar* argv[])
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Set the clear colour value.
-  backgroundColour.x = env["backgroundColourRed"];
-  backgroundColour.y = env["backgroundColourGreen"];
-  backgroundColour.z = env["backgroundColourBlue"];
+  backgroundColour.r = env["backgroundColourRed"];
+  backgroundColour.g = env["backgroundColourGreen"];
+  backgroundColour.b = env["backgroundColourBlue"];
 }
 
 /**

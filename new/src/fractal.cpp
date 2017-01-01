@@ -149,9 +149,9 @@ GLvoid Fractal::updateColours()
 {
   for (GLuint i = 0; i < size; i++) {
     for (GLuint j = 0; j < size; j++) {
-      colours[i][j].x = baseColour.x;
-      colours[i][j].y = baseColour.y;
-      colours[i][j].z = baseColour.z;
+      colours[i][j].r = baseColour.r;
+      colours[i][j].g = baseColour.g;
+      colours[i][j].b = baseColour.b;
     }
   }
 }
@@ -173,36 +173,12 @@ GLvoid Fractal::generateVertexData()
       vertexData[offset++] = normals[i][j].y;
       vertexData[offset++] = normals[i][j].z;
 
-      vertexData[offset++] = colours[i][j].x;
-      vertexData[offset++] = colours[i][j].y;
-      vertexData[offset++] = colours[i][j].z;
+      vertexData[offset++] = colours[i][j].r;
+      vertexData[offset++] = colours[i][j].g;
+      vertexData[offset++] = colours[i][j].b;
     }
   }
 }
-
-/**
- * Generate the vertex normal data.
- */
-// GLvoid Fractal::generateNormalVertexData()
-// {
-//   GLuint offset = 0;
-//   GLfloat normalLength = 1.0f / size;
-
-//   for (GLuint i = 0; i < size; i++) {
-//     for (GLuint j = 0; j < size; j++) {
-//       normalVertexData[offset++] = positions[i][j].x;
-//       normalVertexData[offset++] = positions[i][j].y;
-//       normalVertexData[offset++] = positions[i][j].z;
-
-//       normalVertexData[offset++] = positions[i][j].x +
-//                                    (normals[i][j].x * normalLength);
-//       normalVertexData[offset++] = positions[i][j].y +
-//                                    (normals[i][j].y * normalLength);
-//       normalVertexData[offset++] = positions[i][j].z +
-//                                    (normals[i][j].z * normalLength);
-//     }
-//   }
-// }
 
 /**
  * Generate the vertex index data.
@@ -399,9 +375,9 @@ GLvoid Fractal::addColourNoise(GLfloat noiseLevel)
     for (GLuint j = 0; j < size; j++) {
       GLfloat randomNoise = randomNumber(-noiseLevel, noiseLevel);
 
-      colours[i][j].x += randomNoise;
-      colours[i][j].y += randomNoise;
-      colours[i][j].z += randomNoise;
+      colours[i][j].r += randomNoise;
+      colours[i][j].g += randomNoise;
+      colours[i][j].b += randomNoise;
     }
   }
 }
